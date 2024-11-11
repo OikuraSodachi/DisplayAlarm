@@ -7,6 +7,7 @@ import android.hardware.display.DisplayManager
 import android.os.Binder
 import android.os.IBinder
 import androidx.core.app.NotificationManagerCompat
+import com.todokanai.displayalarm.AlarmModel
 import com.todokanai.displayalarm.components.receiver.DisplayReceiver
 import com.todokanai.displayalarm.notifications.Notifications
 import com.todokanai.displayalarm.objects.Constants.channelID
@@ -20,6 +21,7 @@ import kotlinx.coroutines.launch
 class DisplayAlarmService : Service() {
     //알림 권한 요청 추가할것
 
+    private val alarmModel = AlarmModel()
     private val displayManager by lazy{getSystemService(DISPLAY_SERVICE) as DisplayManager}
     private val notificationManager by lazy {NotificationManagerCompat.from(this)}
     private val receiver = DisplayReceiver()
@@ -52,8 +54,10 @@ class DisplayAlarmService : Service() {
          * **/
         CoroutineScope(Dispatchers.Default).launch {
             while(true) {
-                displays.displayState({onDeviceScreenOn()})
-                delay(1000)
+                while (displays.isDefaultDisplayOn) {
+                    onDeviceScreenOn()
+                    delay(1000)
+                }
             }
         }
     }
@@ -70,6 +74,10 @@ class DisplayAlarmService : Service() {
 
     /** 기기 본체 화면 켜져 있을 때의 Callback **/
     private fun onDeviceScreenOn(){
-        println("!!!!!!!!!!!!!!!!!!")
+        alarmModel.onDeviceScreenOn()
+    }
+
+    private fun onDeviceScreenOff(){
+        alarmModel.stopAlarm()
     }
 }

@@ -30,10 +30,10 @@ class Displays() {
         }
     }
 
-    /** onDeviceScreenOn -> 기기 본체 화면 켜져있을 경우 callback **/
-    fun displayState(onDeviceScreenOn:()->Unit){
-        if(translateState(defaultDisplay.state)){
-            onDeviceScreenOn()
-        }
+    private fun isDefaultDisplayOn():Boolean {
+        return translateState(defaultDisplay.state)
     }
+
+    val isDefaultDisplayOn : Boolean
+        get() = isDefaultDisplayOn()
 }
