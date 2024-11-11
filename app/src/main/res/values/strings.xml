@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">DisplayAlarm</string>
+    <string name="notification_title">null title notification</string>
+    <string name="notification_content_text">notification content text</string>
 </resources>

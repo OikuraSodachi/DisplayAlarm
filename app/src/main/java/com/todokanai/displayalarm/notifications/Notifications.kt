@@ -25,9 +25,9 @@ class Notifications(
 
     fun notification(context: Context): Notification {
         return NotificationCompat.Builder(context, channelID)       // 알림바에 띄울 알림을 만듬
-            .setContentTitle("null Title Noti") // 알림의 제목
+            .setContentTitle(context.getString(R.string.notification_title)) // 알림의 제목
             .setSmallIcon(R.mipmap.ic_launcher_round)
-            .setContentText("test")
+            .setContentText(context.getString(R.string.notification_content_text))
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setOngoing(true)
             .build()
