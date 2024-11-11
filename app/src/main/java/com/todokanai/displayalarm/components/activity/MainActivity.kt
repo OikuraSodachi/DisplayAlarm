@@ -12,19 +12,11 @@ import kotlin.system.exitProcess
 
 class MainActivity : AppCompatActivity() {
 
-    val binding by lazy{ActivityMainBinding.inflate(layoutInflater)}
-    val serviceIntent by lazy  {Intent(applicationContext, DisplayAlarmService::class.java)}
+    private val binding by lazy{ActivityMainBinding.inflate(layoutInflater)}
+    private val serviceIntent by lazy  {Intent(applicationContext, DisplayAlarmService::class.java)}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //enableEdgeToEdge()
-        /*
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-         */
 
         ContextCompat.startForegroundService(this,serviceIntent)
         binding.exitBtn.setOnClickListener{
@@ -43,5 +35,4 @@ class MainActivity : AppCompatActivity() {
         System.runFinalization()
         exitProcess(0)
     }
-
 }

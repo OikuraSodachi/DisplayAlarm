@@ -22,7 +22,6 @@ class Notifications(
         startForeground(service,1,notification,FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED)
     }
 
-
     fun notification(context: Context): Notification {
         return NotificationCompat.Builder(context, channelID)       // 알림바에 띄울 알림을 만듬
             .setContentTitle(context.getString(R.string.notification_title)) // 알림의 제목
