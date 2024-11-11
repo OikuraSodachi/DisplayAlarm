@@ -18,6 +18,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Todo: Permission 요청 코드 작성할 것
+        if(!isPermissionGranted()){
+            requestPermission()
+        }
+
         ContextCompat.startForegroundService(this,serviceIntent)
         binding.exitBtn.setOnClickListener{
             exit_td(this,serviceIntent)
@@ -34,5 +39,15 @@ class MainActivity : AppCompatActivity() {
         serviceIntent?.let{ activity.stopService(it) }     // 서비스 종료
         System.runFinalization()
         exitProcess(0)
+    }
+
+
+    fun isPermissionGranted():Boolean{
+        return true
+    }
+
+
+    fun requestPermission(){
+
     }
 }
