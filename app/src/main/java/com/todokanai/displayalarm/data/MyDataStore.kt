@@ -32,11 +32,4 @@ class MyDataStore(val context: Context) {
     val filePath : Flow<String?> = context.dataStore.data.map{
         it[DATASTORE_SOUND_FILE]
     }
-
-    val test = filePath.map{ uriString ->
-        uriString?.let {
-            File(it.toUri().path)
-        }
-    }
-
 }

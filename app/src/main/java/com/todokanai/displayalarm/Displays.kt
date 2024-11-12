@@ -6,6 +6,7 @@ import com.todokanai.displayalarm.objects.MyObjects.displays
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class Displays() {
@@ -14,10 +15,13 @@ class Displays() {
         lateinit var manager:DisplayManager
     }
 
+    val shouldPlay = MutableStateFlow<Boolean>(false)
+
+
     fun init(displayManager: DisplayManager){
         manager = displayManager
         defaultDisplay = manager.displays.first()
-        println("defaultDisplay: ${defaultDisplay.name}")
+     //   println("defaultDisplay: ${defaultDisplay.name}")
     }
 
     private fun translateState(state:Int):Boolean{
@@ -46,13 +50,23 @@ class Displays() {
      *
      * DeX 모드 켜면 Intent.ACTION_SCREEN_ON/OFF 가 Receiver에 수신되지 않는 현상 있음
      * **/
-    fun beginObserve(onDeviceScreenOn:()->Unit){
+    fun beginObserve(){
         CoroutineScope(Dispatchers.Default).launch {
             while(true) {
+                if(displays.isDefaultDisplayOn){
+                    //onDeviceScreenOn()
+                    shouldPlay.value = true
+                }else{
+                    shouldPlay.value = false
+                        //onDeviceScreenOff()
+                }
+                /*
                 while (displays.isDefaultDisplayOn) {
                     onDeviceScreenOn()
                     delay(1000)
                 }
+                 */
+                delay(1000)
             }
         }
     }
