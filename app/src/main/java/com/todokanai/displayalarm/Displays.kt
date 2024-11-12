@@ -2,6 +2,11 @@ package com.todokanai.displayalarm
 
 import android.hardware.display.DisplayManager
 import android.view.Display
+import com.todokanai.displayalarm.objects.MyObjects.displays
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class Displays() {
     companion object{
@@ -30,10 +35,25 @@ class Displays() {
         }
     }
 
-    private fun isDefaultDisplayOn():Boolean {
+    private fun isDefaultDisplayOn_td():Boolean {
         return translateState(defaultDisplay.state)
     }
 
-    val isDefaultDisplayOn : Boolean
-        get() = isDefaultDisplayOn()
+    private val isDefaultDisplayOn : Boolean
+        get() = isDefaultDisplayOn_td()
+
+    /** 1초마다 display 상태 체크함.
+     *
+     * DeX 모드 켜면 Intent.ACTION_SCREEN_ON/OFF 가 Receiver에 수신되지 않는 현상 있음
+     * **/
+    fun beginObserve(onDeviceScreenOn:()->Unit){
+        CoroutineScope(Dispatchers.Default).launch {
+            while(true) {
+                while (displays.isDefaultDisplayOn) {
+                    onDeviceScreenOn()
+                    delay(1000)
+                }
+            }
+        }
+    }
 }

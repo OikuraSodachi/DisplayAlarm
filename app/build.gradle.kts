@@ -40,6 +40,7 @@ android {
 
 dependencies {
     implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
+    implementation ("androidx.datastore:datastore-preferences:1.1.0-alpha01")       // enable DataStore
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
