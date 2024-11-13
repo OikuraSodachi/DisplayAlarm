@@ -47,6 +47,7 @@ class ActivityModel(context:Context) {
     fun startService(context: Context,serviceIntent:Intent){
         CoroutineScope(Dispatchers.IO).launch {
             fileToPlay = dataStore.getFilePath()
+        }.invokeOnCompletion {
             ContextCompat.startForegroundService(context, serviceIntent)
         }
     }
