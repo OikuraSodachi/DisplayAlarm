@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.todokanai.displayalarm.components.service.DisplayAlarmService.Companion.fileToPlay
 import com.todokanai.displayalarm.data.MyDataStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -46,7 +45,8 @@ class ActivityModel(context:Context) {
 
     fun startService(context: Context,serviceIntent:Intent){
         CoroutineScope(Dispatchers.IO).launch {
-            fileToPlay = dataStore.getFilePath()
+            ///fileToPlay = dataStore.getFilePath()
+         //   value 방식 대신 flow 활용하기
         }.invokeOnCompletion {
             ContextCompat.startForegroundService(context, serviceIntent)
         }

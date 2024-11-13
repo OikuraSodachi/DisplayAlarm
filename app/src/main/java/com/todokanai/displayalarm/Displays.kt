@@ -15,7 +15,7 @@ class Displays() {
         lateinit var manager:DisplayManager
     }
 
-    val shouldPlay = MutableStateFlow<Boolean>(false)
+    val isScreenOn = MutableStateFlow<Boolean>(false)
 
 
     fun init(displayManager: DisplayManager){
@@ -55,9 +55,9 @@ class Displays() {
             while(true) {
                 if(displays.isDefaultDisplayOn){
                     //onDeviceScreenOn()
-                    shouldPlay.value = true
+                    isScreenOn.value = true
                 }else{
-                    shouldPlay.value = false
+                    isScreenOn.value = false
                         //onDeviceScreenOff()
                 }
                 /*

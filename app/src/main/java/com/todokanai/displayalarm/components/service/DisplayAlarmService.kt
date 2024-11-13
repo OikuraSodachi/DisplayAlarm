@@ -4,12 +4,14 @@ import android.app.Service
 import android.content.Intent
 import android.content.IntentFilter
 import android.hardware.display.DisplayManager
+import android.media.AudioManager
 import android.os.Binder
 import android.os.IBinder
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.asLiveData
 import com.todokanai.displayalarm.AlarmModel
 import com.todokanai.displayalarm.components.receiver.DisplayReceiver
+import com.todokanai.displayalarm.data.MyDataStore
 import com.todokanai.displayalarm.notifications.Notifications
 import com.todokanai.displayalarm.objects.Constants.channelID
 import com.todokanai.displayalarm.objects.MyObjects.displays
@@ -20,8 +22,8 @@ class DisplayAlarmService : Service() {
     companion object {
         var fileToPlay: String? = null
     }
-
-    private val alarmModel by lazy {AlarmModel()}
+    private val audioManager by lazy{getSystemService(AUDIO_SERVICE) as AudioManager}
+    private val alarmModel by lazy {AlarmModel(MyDataStore(this),audioManager)}
     private val displayManager by lazy{getSystemService(DISPLAY_SERVICE) as DisplayManager}
     private val notificationManager by lazy {NotificationManagerCompat.from(this)}
     private val receiver = DisplayReceiver()
@@ -43,17 +45,20 @@ class DisplayAlarmService : Service() {
         super.onCreate()
         displays.init(displayManager)
         initReceiver(this)
-        alarmModel.init(fileToPlay)
+        alarmModel.observeSoundFile()
         notifications.createChannel(this)
-        displays.beginObserve()
 
-        displays.shouldPlay.asLiveData().observeForever {
+        displays.beginObserve()
+        ///*
+        displays.isScreenOn.asLiveData().observeForever {
             if(it){
                 alarmModel.onDeviceScreenOn()
             }else{
                 alarmModel.onDeviceScreenOff()
             }
         }
+
+        // */
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {

@@ -36,6 +36,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-    </application>
+
+
+        <!-- Version < 3.0. DeX Mode and Screen Mirroring support -->
+        <!-- <meta-data android:name="com.samsung.android.keepalive.density" android:value="true"/> -->
+
+        <!-- Dex 사이 오갈때 앱 종료 방지-->
+        <!-- Version >= 3.0. DeX Dual Mode support -->
+        <meta-data android:name="com.samsung.android.multidisplay.keep_process_alive" android:value="true"/>    </application>
 
 </manifest>
