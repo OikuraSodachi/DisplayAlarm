@@ -24,7 +24,7 @@ class AlarmModel(val dataStore: MyDataStore,val audioManager: AudioManager) {
                 result = audioDevices[i]
             }
         }
-        println("result: ${result?.productName}")
+       // println("result: ${result?.productName}")
         return result
     }
 
