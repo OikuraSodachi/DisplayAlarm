@@ -10,7 +10,6 @@ class AlarmModel() {
 
     /** 기기 본체 화면 켜져 있을 때의 Callback **/
     fun onDeviceScreenOn(){
-    //    println("!!!!!!!!!!!!!!!!!!")
         if(!mediaPlayer.isPlaying){
             mediaPlayer.run {
                 prepare()
