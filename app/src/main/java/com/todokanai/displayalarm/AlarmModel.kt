@@ -9,28 +9,12 @@ import com.todokanai.displayalarm.data.MyDataStore
 
 class AlarmModel(val dataStore: MyDataStore,val audioManager: AudioManager) {
 
-    var fileToPlay:String? = null
-
     val audioDevices = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
 
-    fun speaker(audioDevices:List<AudioDeviceInfo>):AudioDeviceInfo?{
-        audioDevices.forEach{
-            println(it.productName)
-        }
-        val size = audioDevices.size
-        var result : AudioDeviceInfo? = null
-        for(i in 0..size-1){
-            if(audioDevices[i].type == TYPE_BUILTIN_SPEAKER){
-                result = audioDevices[i]
-            }
-        }
-       // println("result: ${result?.productName}")
-        return result
-    }
+    fun speaker(audioDevices: Array<AudioDeviceInfo>) = audioDevices.filter { it.type == TYPE_BUILTIN_SPEAKER }.first()
 
     val mediaPlayer = MediaPlayer().apply {
         isLooping = true
-       // preferredDevice = speaker(audioDevices.toList())
     }
 
     /** 기기 본체 화면 켜져 있을 때의 Callback **/
@@ -65,14 +49,13 @@ class AlarmModel(val dataStore: MyDataStore,val audioManager: AudioManager) {
     fun observeSoundFile(){
         dataStore.filePath.asLiveData().observeForever { path ->
             path?.let {
-                fileToPlay = it
                 playFile(it)
             }
         }
     }
 
     fun soundToSpeaker() {
-        mediaPlayer.preferredDevice = speaker(audioDevices.toList())
+        mediaPlayer.preferredDevice = speaker(audioDevices)
     }
 
     fun soundToDisplay(){
