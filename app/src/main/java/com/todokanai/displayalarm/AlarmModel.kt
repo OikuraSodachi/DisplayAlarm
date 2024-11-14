@@ -7,7 +7,7 @@ import android.media.MediaPlayer
 import androidx.lifecycle.asLiveData
 import com.todokanai.displayalarm.data.MyDataStore
 
-class AlarmModel(val dataStore: MyDataStore,val audioManager: AudioManager) {
+class AlarmModel(val dataStore: MyDataStore, audioManager: AudioManager) {
 
     val audioDevices = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
 
