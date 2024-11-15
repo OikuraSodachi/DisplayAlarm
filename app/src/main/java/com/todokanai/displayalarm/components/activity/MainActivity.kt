@@ -17,11 +17,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Todo: Permission 요청 코드 작성할 것
-       if(!model.isPermissionGranted(this)){
-            model.requestPermission(this)
-        }
-
+        model.requestPermission(this)
         model.startService(this,serviceIntent)
 
         binding.run {

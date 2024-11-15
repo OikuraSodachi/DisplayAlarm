@@ -19,7 +19,7 @@ import kotlin.system.exitProcess
 class ActivityModel(context:Context) {
 
     private val dataStore = MyDataStore(context)
-    private val permissions:Array<String> = arrayOf(Manifest.permission.POST_NOTIFICATIONS)
+    private val permissions:Array<String> = arrayOf(Manifest.permission.POST_NOTIFICATIONS,Manifest.permission.READ_MEDIA_AUDIO,Manifest.permission.READ_EXTERNAL_STORAGE)
 
     fun exit(activity:Activity,serviceIntent: Intent? = null){
         ActivityCompat.finishAffinity(activity)

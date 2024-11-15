@@ -11,10 +11,12 @@ import androidx.core.app.ServiceCompat.startForeground
 import com.todokanai.displayalarm.R
 
 class Notifications(
+    val service: Service,
     val serviceChannel:NotificationChannel,
     val channelID:String,
-    val notificationManager: NotificationManagerCompat
 ) {
+
+    private val notificationManager by lazy {NotificationManagerCompat.from(service)}
 
     fun createChannel(service: Service){
         notificationManager.createNotificationChannel(serviceChannel)
