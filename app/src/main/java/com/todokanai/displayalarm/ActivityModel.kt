@@ -1,8 +1,11 @@
 package com.todokanai.displayalarm
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.media.MediaPlayer
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.todokanai.displayalarm.data.MyDataStore
@@ -16,6 +19,7 @@ import kotlin.system.exitProcess
 class ActivityModel(context:Context) {
 
     private val dataStore = MyDataStore(context)
+    private val permissions:Array<String> = arrayOf(Manifest.permission.POST_NOTIFICATIONS)
 
     fun exit(activity:Activity,serviceIntent: Intent? = null){
         ActivityCompat.finishAffinity(activity)
@@ -24,12 +28,18 @@ class ActivityModel(context:Context) {
         exitProcess(0)
     }
 
-    fun isPermissionGranted():Boolean{
-        return true
+    fun isPermissionGranted(activity: Activity):Boolean{
+        val permission = permissions.first()
+
+        return ContextCompat.checkSelfPermission(activity,permission) == PackageManager.PERMISSION_GRANTED
     }
 
-    fun requestPermission(){
-
+    fun requestPermission(activity: Activity,requestCode:Int = 1111){
+        ActivityCompat.requestPermissions(
+            activity,
+            permissions,
+            requestCode
+        )
     }
 
     fun saveFilePath(filePath:String){

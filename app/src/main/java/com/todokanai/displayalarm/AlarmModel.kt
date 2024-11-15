@@ -4,7 +4,6 @@ import android.media.AudioDeviceInfo
 import android.media.AudioDeviceInfo.TYPE_BUILTIN_SPEAKER
 import android.media.AudioManager
 import android.media.MediaPlayer
-import androidx.lifecycle.asLiveData
 import com.todokanai.displayalarm.data.MyDataStore
 
 class AlarmModel(val dataStore: MyDataStore, audioManager: AudioManager) {
@@ -17,48 +16,20 @@ class AlarmModel(val dataStore: MyDataStore, audioManager: AudioManager) {
         isLooping = true
     }
 
-    /** 기기 본체 화면 켜져 있을 때의 Callback **/
-    fun onDeviceScreenOn(){
-        try {
-            if (!mediaPlayer.isPlaying) {
-                soundToSpeaker()
-                mediaPlayer.run {
-                    prepare()
-                    start()
-                }
-            }
-        }catch (e:Exception){
-            e.printStackTrace()
-        }
-    }
-
-    fun onDeviceScreenOff(){
-        soundToDisplay()
-        mediaPlayer.stop()
-    }
-
-    fun playFile(filePath: String){
+    fun prepareFile(filePath: String, isScreenOn:Boolean){
         mediaPlayer.run {
-            println("filePath: $filePath")
-            setDataSource(filePath)
-            prepare()
-            start()
-        }
-    }
-
-    fun observeSoundFile(){
-        dataStore.filePath.asLiveData().observeForever { path ->
-            path?.let {
-                playFile(it)
+            if(isScreenOn){
+                setDataSource(filePath)
+                soundToSpeaker()
+                prepare()
+                start()
+            }else{
+                reset()
             }
         }
     }
 
     fun soundToSpeaker() {
         mediaPlayer.preferredDevice = speaker(audioDevices)
-    }
-
-    fun soundToDisplay(){
-
     }
 }

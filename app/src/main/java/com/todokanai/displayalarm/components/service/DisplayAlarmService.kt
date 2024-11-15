@@ -16,12 +16,11 @@ import com.todokanai.displayalarm.notifications.Notifications
 import com.todokanai.displayalarm.objects.Constants.channelID
 import com.todokanai.displayalarm.objects.MyObjects.displays
 import com.todokanai.displayalarm.objects.MyObjects.serviceChannel
+import kotlinx.coroutines.flow.combine
 
 class DisplayAlarmService : Service() {
     //알림 권한 요청 추가할것
-    companion object {
-        var fileToPlay: String? = null
-    }
+
     private val audioManager by lazy{getSystemService(AUDIO_SERVICE) as AudioManager}
     private val alarmModel by lazy {AlarmModel(MyDataStore(this),audioManager)}
     private val displayManager by lazy{getSystemService(DISPLAY_SERVICE) as DisplayManager}
@@ -36,7 +35,6 @@ class DisplayAlarmService : Service() {
         )
     }
 
-
     override fun onBind(intent: Intent): IBinder {
         return binder
     }
@@ -45,20 +43,29 @@ class DisplayAlarmService : Service() {
         super.onCreate()
         displays.init(displayManager)
         initReceiver(this)
-        alarmModel.observeSoundFile()
         notifications.createChannel(this)
 
-        displays.beginObserve()
-        ///*
-        displays.isScreenOn.asLiveData().observeForever {
-            if(it){
-                alarmModel.onDeviceScreenOn()
-            }else{
-                alarmModel.onDeviceScreenOff()
-            }
+        displays.isDisplayOn_setter()
+
+        val soundFilePath = alarmModel.dataStore.filePath
+        val isScreenOn = displays.isScreenOn
+
+        val test = combine(
+            soundFilePath,
+            isScreenOn
+        ){ path,screen ->
+            return@combine Pair(path,screen)
         }
 
-        // */
+        test.asLiveData().observeForever { temp ->
+            temp.first?.let {
+                try {
+                    alarmModel.prepareFile(it, temp.second)
+                }catch (e:Exception){
+                    e.printStackTrace()
+                }
+            }
+        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {

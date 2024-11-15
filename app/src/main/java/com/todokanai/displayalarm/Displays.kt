@@ -17,11 +17,9 @@ class Displays() {
 
     val isScreenOn = MutableStateFlow<Boolean>(false)
 
-
     fun init(displayManager: DisplayManager){
         manager = displayManager
         defaultDisplay = manager.displays.first()
-     //   println("defaultDisplay: ${defaultDisplay.name}")
     }
 
     private fun translateState(state:Int):Boolean{
@@ -50,22 +48,14 @@ class Displays() {
      *
      * DeX 모드 켜면 Intent.ACTION_SCREEN_ON/OFF 가 Receiver에 수신되지 않는 현상 있음
      * **/
-    fun beginObserve(){
+    fun isDisplayOn_setter(){
         CoroutineScope(Dispatchers.Default).launch {
             while(true) {
                 if(displays.isDefaultDisplayOn){
-                    //onDeviceScreenOn()
                     isScreenOn.value = true
                 }else{
                     isScreenOn.value = false
-                        //onDeviceScreenOff()
                 }
-                /*
-                while (displays.isDefaultDisplayOn) {
-                    onDeviceScreenOn()
-                    delay(1000)
-                }
-                 */
                 delay(1000)
             }
         }

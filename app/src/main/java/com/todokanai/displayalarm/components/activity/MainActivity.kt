@@ -18,8 +18,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         // Todo: Permission 요청 코드 작성할 것
-        if(!model.isPermissionGranted()){
-            model.requestPermission()
+       if(!model.isPermissionGranted(this)){
+            model.requestPermission(this)
         }
 
         model.startService(this,serviceIntent)
@@ -29,7 +29,6 @@ class MainActivity : AppCompatActivity() {
                 model.exit(this@MainActivity,serviceIntent)
             }
             testBtn.setOnClickListener {
-                // 대충 파일 선택하기
                 model.saveFilePath(editText.text.toString())
             }
         }
