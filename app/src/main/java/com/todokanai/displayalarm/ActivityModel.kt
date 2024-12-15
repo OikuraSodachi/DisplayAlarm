@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.media.MediaPlayer
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.todokanai.displayalarm.data.MyDataStore
