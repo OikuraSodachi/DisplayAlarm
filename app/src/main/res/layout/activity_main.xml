@@ -48,7 +48,37 @@
             android:id="@+id/timeLimitLayout"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:orientation="horizontal"></LinearLayout>
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/startHour"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <Spinner
+                android:id="@+id/startMin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <Spinner
+                android:id="@+id/endHour"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <Spinner
+                android:id="@+id/endMin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+        </LinearLayout>
 
         <Button
             android:id="@+id/exitBtn"
