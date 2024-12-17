@@ -30,7 +30,7 @@ class DisplayAlarmService : Service() {
     @Inject
     lateinit var displayManager: DisplayManager
 
-    private val alarmModel by lazy {AlarmModel(audioManager)}
+    private val alarmModel by lazy {AlarmModel()}
     private val binder = Binder()
     private val notifications by lazy {
         Notifications(
@@ -51,12 +51,9 @@ class DisplayAlarmService : Service() {
 
         displays.isDisplayOn_setter()
 
-        val soundFilePath = dataStore.filePath
-        val isScreenOn = displays.isScreenOn
-
         val test = combine(
-            soundFilePath,
-            isScreenOn
+            dataStore.filePath,
+            displays.isScreenOn
         ){ path,screen ->
             return@combine Pair(path,screen)
         }
@@ -64,7 +61,7 @@ class DisplayAlarmService : Service() {
         test.asLiveData().observeForever { temp ->
             temp.first?.let {
                 try {
-                    alarmModel.prepareFile(it, temp.second)
+                    alarmModel.prepareFile(audioManager,it, temp.second)
                 }catch (e:Exception){
                     e.printStackTrace()
                 }
