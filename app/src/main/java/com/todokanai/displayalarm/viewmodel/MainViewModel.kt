@@ -1,6 +1,5 @@
 package com.todokanai.displayalarm.viewmodel
 
-import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -8,6 +7,7 @@ import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
+import com.todokanai.displayalarm.objects.MyObjects.permissions
 import com.todokanai.displayalarm.repository.DataStoreRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -19,7 +19,7 @@ import javax.inject.Inject
 import kotlin.system.exitProcess
 
 @HiltViewModel
-class MainViewModel @Inject constructor(val dataStore:DataStoreRepository):ViewModel() {
+class MainViewModel @Inject constructor(private val dataStore:DataStoreRepository):ViewModel() {
 
     val startHour = (0..23).toMutableList()
     val startMin = (0..59).toMutableList()
@@ -31,12 +31,6 @@ class MainViewModel @Inject constructor(val dataStore:DataStoreRepository):ViewM
             dataStore.saveStartHour(value)
         }
     }
-
-    private val permissions:Array<String> = arrayOf(
-        Manifest.permission.POST_NOTIFICATIONS,
-        Manifest.permission.READ_MEDIA_AUDIO,
-        Manifest.permission.READ_EXTERNAL_STORAGE
-    )
 
     fun exit(activity: Activity, serviceIntent: Intent? = null){
         ActivityCompat.finishAffinity(activity)
@@ -80,9 +74,6 @@ class MainViewModel @Inject constructor(val dataStore:DataStoreRepository):ViewM
     }
 
     fun testBtn(){
-        val tempLast = startHour.last()
-        startHour.add(0,tempLast)
-        startHour.removeLast()
-        println("items: $startHour")
+
     }
 }
