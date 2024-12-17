@@ -31,6 +31,21 @@ class MainViewModel @Inject constructor(private val dataStore:DataStoreRepositor
             dataStore.saveStartHour(value)
         }
     }
+    fun setStartMin(value:Int){
+        CoroutineScope(Dispatchers.IO).launch {
+            dataStore.saveStartMin(value)
+        }
+    }
+    fun setEndHour(value:Int){
+        CoroutineScope(Dispatchers.IO).launch {
+            dataStore.saveEndHour(value)
+        }
+    }
+    fun setEndMin(value:Int){
+        CoroutineScope(Dispatchers.IO).launch {
+            dataStore.saveEndMin(value)
+        }
+    }
 
     fun exit(activity: Activity, serviceIntent: Intent? = null){
         ActivityCompat.finishAffinity(activity)
@@ -73,7 +88,11 @@ class MainViewModel @Inject constructor(private val dataStore:DataStoreRepositor
      //   }
     }
 
-    fun testBtn(){
+    fun saveTime(startHour:Int,startMin:Int,endHour:Int,endMin:Int){
+     //   println("save: $startHour:$startMin ~ $endHour:$endMin")
 
+        CoroutineScope(Dispatchers.IO).launch {
+            println("${dataStore.getStartHour()}:${dataStore.getStartMin()} ~ ${dataStore.getEndHour()}:${dataStore.getEndMin()}")
+        }
     }
 }

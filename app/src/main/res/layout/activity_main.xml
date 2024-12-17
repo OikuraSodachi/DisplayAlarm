@@ -97,11 +97,11 @@
             android:text="select file" />
 
         <Button
-            android:id="@+id/testBtn"
+            android:id="@+id/saveTimeBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
-            android:text="Test" />
+            android:text="setTime" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
