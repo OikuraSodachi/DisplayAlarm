@@ -71,7 +71,9 @@ class MainViewModel @Inject constructor(val dataStore:DataStoreRepository):ViewM
     }
 
     fun testBtn(){
-        items.add(0,1)
+        val tempLast = items.last()
+        items.add(0,tempLast)
+        items.removeLast()
         println("items: $items")
     }
 }
