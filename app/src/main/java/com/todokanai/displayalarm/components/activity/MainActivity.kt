@@ -3,17 +3,22 @@ package com.todokanai.displayalarm.components.activity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.asLiveData
-import com.todokanai.displayalarm.ActivityModel
 import com.todokanai.displayalarm.components.service.DisplayAlarmService
 import com.todokanai.displayalarm.databinding.ActivityMainBinding
+import com.todokanai.displayalarm.viewmodel.MainViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private val binding by lazy{ActivityMainBinding.inflate(layoutInflater)}
     private val serviceIntent by lazy  {Intent(applicationContext, DisplayAlarmService::class.java)}
-    private val model by lazy {ActivityModel(this)}
+   // private val model by lazy {ActivityModel(this)}
+
+    private val model:MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

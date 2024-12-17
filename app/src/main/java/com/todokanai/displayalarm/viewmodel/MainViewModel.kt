@@ -1,4 +1,4 @@
-package com.todokanai.displayalarm
+package com.todokanai.displayalarm.viewmodel
 
 import android.Manifest
 import android.app.Activity
@@ -7,20 +7,25 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.todokanai.displayalarm.data.MyDataStore
+import androidx.lifecycle.ViewModel
+import com.todokanai.displayalarm.repository.DataStoreRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.io.File
+import javax.inject.Inject
 import kotlin.system.exitProcess
 
-class ActivityModel(context:Context) {
+@HiltViewModel
+class MainViewModel @Inject constructor(val dataStore:DataStoreRepository):ViewModel() {
+    private val permissions:Array<String> = arrayOf(
+        Manifest.permission.POST_NOTIFICATIONS,
+        Manifest.permission.READ_MEDIA_AUDIO,
+        Manifest.permission.READ_EXTERNAL_STORAGE)
 
-    private val dataStore = MyDataStore(context)
-    private val permissions:Array<String> = arrayOf(Manifest.permission.POST_NOTIFICATIONS,Manifest.permission.READ_MEDIA_AUDIO,Manifest.permission.READ_EXTERNAL_STORAGE)
-
-    fun exit(activity:Activity,serviceIntent: Intent? = null){
+    fun exit(activity: Activity, serviceIntent: Intent? = null){
         ActivityCompat.finishAffinity(activity)
         serviceIntent?.let{ activity.stopService(it) }     // 서비스 종료
         System.runFinalization()
@@ -33,7 +38,7 @@ class ActivityModel(context:Context) {
         return ContextCompat.checkSelfPermission(activity,permission) == PackageManager.PERMISSION_GRANTED
     }
 
-    fun requestPermission(activity: Activity,requestCode:Int = 1111){
+    fun requestPermission(activity: Activity, requestCode:Int = 1111){
         ActivityCompat.requestPermissions(
             activity,
             permissions,
@@ -52,10 +57,10 @@ class ActivityModel(context:Context) {
         }
     }
 
-    fun startService(context: Context,serviceIntent:Intent){
+    fun startService(context: Context, serviceIntent: Intent){
         CoroutineScope(Dispatchers.IO).launch {
             ///fileToPlay = dataStore.getFilePath()
-         //   value 방식 대신 flow 활용하기
+            //   value 방식 대신 flow 활용하기
         }.invokeOnCompletion {
             ContextCompat.startForegroundService(context, serviceIntent)
         }

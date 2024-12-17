@@ -8,18 +8,24 @@ import android.os.Binder
 import android.os.IBinder
 import androidx.lifecycle.asLiveData
 import com.todokanai.displayalarm.AlarmModel
-import com.todokanai.displayalarm.data.MyDataStore
 import com.todokanai.displayalarm.notifications.Notifications
 import com.todokanai.displayalarm.objects.Constants.channelID
 import com.todokanai.displayalarm.objects.MyObjects.displays
 import com.todokanai.displayalarm.objects.MyObjects.serviceChannel
+import com.todokanai.displayalarm.repository.DataStoreRepository
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.combine
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class DisplayAlarmService : Service() {
     //알림 권한 요청 추가할것
 
+    @Inject
+    lateinit var dataStore:DataStoreRepository
+
     private val audioManager by lazy{getSystemService(AUDIO_SERVICE) as AudioManager}
-    private val alarmModel by lazy {AlarmModel(MyDataStore(this),audioManager)}
+    private val alarmModel by lazy {AlarmModel(dataStore,audioManager)}
     private val displayManager by lazy{getSystemService(DISPLAY_SERVICE) as DisplayManager}
     private val binder = Binder()
     private val notifications by lazy {
