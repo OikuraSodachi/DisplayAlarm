@@ -21,7 +21,11 @@ import kotlin.system.exitProcess
 @HiltViewModel
 class MainViewModel @Inject constructor(val dataStore:DataStoreRepository):ViewModel() {
 
-    val items = mutableListOf(1,2,3)
+    //val items = mutableListOf(1,2,3)
+    val startHour = (0..23).toMutableList()
+    val startMin = (0..59).toMutableList()
+    val endHour = (0..23).toMutableList()
+    val endMin = (0..59).toMutableList()
 
     private val permissions:Array<String> = arrayOf(
         Manifest.permission.POST_NOTIFICATIONS,
@@ -71,9 +75,9 @@ class MainViewModel @Inject constructor(val dataStore:DataStoreRepository):ViewM
     }
 
     fun testBtn(){
-        val tempLast = items.last()
-        items.add(0,tempLast)
-        items.removeLast()
-        println("items: $items")
+        val tempLast = startHour.last()
+        startHour.add(0,tempLast)
+        startHour.removeLast()
+        println("items: $startHour")
     }
 }

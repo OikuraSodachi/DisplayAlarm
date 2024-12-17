@@ -36,11 +36,12 @@ class MainActivity : AppCompatActivity() {
                 viewModel.testBtn()
             }
 
-            val temp = ArrayAdapter<Int>(this@MainActivity,android.R.layout.simple_spinner_dropdown_item,viewModel.items)
-                .apply {
-
-                }
-            startHour.adapter = temp
+            val spinner_R = android.R.layout.simple_spinner_dropdown_item
+            //val temp = ArrayAdapter<Int>(this@MainActivity,spinner_R,viewModel.startHour)
+            startHour.adapter = ArrayAdapter<Int>(this@MainActivity,spinner_R,viewModel.startHour)
+            startMin.adapter = ArrayAdapter(this@MainActivity,spinner_R,viewModel.startMin)
+            endHour.adapter = ArrayAdapter<Int>(this@MainActivity,spinner_R,viewModel.endHour)
+            endMin.adapter = ArrayAdapter<Int>(this@MainActivity,spinner_R,viewModel.endMin)
         }
         viewModel.fileName.asLiveData().observe(this){
             binding.soundFileName.text = it
