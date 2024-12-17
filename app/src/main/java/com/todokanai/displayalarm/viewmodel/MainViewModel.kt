@@ -20,10 +20,14 @@ import kotlin.system.exitProcess
 
 @HiltViewModel
 class MainViewModel @Inject constructor(val dataStore:DataStoreRepository):ViewModel() {
+
+    val items = mutableListOf(1,2,3)
+
     private val permissions:Array<String> = arrayOf(
         Manifest.permission.POST_NOTIFICATIONS,
         Manifest.permission.READ_MEDIA_AUDIO,
-        Manifest.permission.READ_EXTERNAL_STORAGE)
+        Manifest.permission.READ_EXTERNAL_STORAGE
+    )
 
     fun exit(activity: Activity, serviceIntent: Intent? = null){
         ActivityCompat.finishAffinity(activity)
@@ -58,11 +62,16 @@ class MainViewModel @Inject constructor(val dataStore:DataStoreRepository):ViewM
     }
 
     fun startService(context: Context, serviceIntent: Intent){
-        CoroutineScope(Dispatchers.IO).launch {
+     //   CoroutineScope(Dispatchers.IO).launch {
             ///fileToPlay = dataStore.getFilePath()
             //   value 방식 대신 flow 활용하기
-        }.invokeOnCompletion {
+      //  }.invokeOnCompletion {
             ContextCompat.startForegroundService(context, serviceIntent)
-        }
+     //   }
+    }
+
+    fun testBtn(){
+        items.add(0,1)
+        println("items: $items")
     }
 }

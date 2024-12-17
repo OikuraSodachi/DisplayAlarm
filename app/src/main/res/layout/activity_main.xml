@@ -90,11 +90,18 @@
             android:text="exit" />
 
         <Button
-            android:id="@+id/testBtn"
+            android:id="@+id/selectFileBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="50dp"
             android:text="select file" />
+
+        <Button
+            android:id="@+id/testBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:text="Test" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

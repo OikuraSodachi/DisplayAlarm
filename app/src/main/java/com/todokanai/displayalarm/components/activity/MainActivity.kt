@@ -16,32 +16,33 @@ class MainActivity : AppCompatActivity() {
 
     private val binding by lazy{ActivityMainBinding.inflate(layoutInflater)}
     private val serviceIntent by lazy  {Intent(applicationContext, DisplayAlarmService::class.java)}
-   // private val model by lazy {ActivityModel(this)}
-
-    private val model:MainViewModel by viewModels()
+    private val viewModel:MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        model.requestPermission(this)
-        model.startService(this,serviceIntent)
+        viewModel.requestPermission(this)
+        viewModel.startService(this,serviceIntent)
 
         binding.run {
             exitBtn.setOnClickListener {
-                model.exit(this@MainActivity,serviceIntent)
+                viewModel.exit(this@MainActivity,serviceIntent)
             }
-            testBtn.setOnClickListener {
-                model.saveFilePath(editText.text.toString())
+            selectFileBtn.setOnClickListener {
+                viewModel.saveFilePath(editText.text.toString())
             }
-            val items = arrayOf(1,2,3)
 
-            val temp = ArrayAdapter<Int>(this@MainActivity,android.R.layout.simple_spinner_dropdown_item,items)
+            testBtn.setOnClickListener {
+                viewModel.testBtn()
+            }
+
+            val temp = ArrayAdapter<Int>(this@MainActivity,android.R.layout.simple_spinner_dropdown_item,viewModel.items)
                 .apply {
 
                 }
             startHour.adapter = temp
         }
-        model.fileName.asLiveData().observe(this){
+        viewModel.fileName.asLiveData().observe(this){
             binding.soundFileName.text = it
         }
         setContentView(binding.root)
