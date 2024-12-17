@@ -21,11 +21,16 @@ import kotlin.system.exitProcess
 @HiltViewModel
 class MainViewModel @Inject constructor(val dataStore:DataStoreRepository):ViewModel() {
 
-    //val items = mutableListOf(1,2,3)
     val startHour = (0..23).toMutableList()
     val startMin = (0..59).toMutableList()
     val endHour = (0..23).toMutableList()
     val endMin = (0..59).toMutableList()
+
+    fun setStartHour(value:Int){
+        CoroutineScope(Dispatchers.IO).launch {
+            dataStore.saveStartHour(value)
+        }
+    }
 
     private val permissions:Array<String> = arrayOf(
         Manifest.permission.POST_NOTIFICATIONS,

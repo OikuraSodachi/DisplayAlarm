@@ -6,6 +6,7 @@ import android.widget.ArrayAdapter
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.asLiveData
+import com.todokanai.displayalarm.adapters.SpinnerListener
 import com.todokanai.displayalarm.components.service.DisplayAlarmService
 import com.todokanai.displayalarm.databinding.ActivityMainBinding
 import com.todokanai.displayalarm.viewmodel.MainViewModel
@@ -37,11 +38,23 @@ class MainActivity : AppCompatActivity() {
             }
 
             val spinner_R = android.R.layout.simple_spinner_dropdown_item
-            //val temp = ArrayAdapter<Int>(this@MainActivity,spinner_R,viewModel.startHour)
-            startHour.adapter = ArrayAdapter<Int>(this@MainActivity,spinner_R,viewModel.startHour)
+            val dAdapter = ArrayAdapter(this@MainActivity,spinner_R,viewModel.startHour)
+            startHour.adapter = dAdapter
+
+            startHour.onItemSelectedListener = SpinnerListener({ position ->
+                dAdapter.getItem(position)?.let { it ->
+                    viewModel.setStartHour(
+                        it
+                    )
+                }
+            })
+
+
+
+           // val temp = AdapterView.OnItemSelectedListener
             startMin.adapter = ArrayAdapter(this@MainActivity,spinner_R,viewModel.startMin)
-            endHour.adapter = ArrayAdapter<Int>(this@MainActivity,spinner_R,viewModel.endHour)
-            endMin.adapter = ArrayAdapter<Int>(this@MainActivity,spinner_R,viewModel.endMin)
+            endHour.adapter = ArrayAdapter(this@MainActivity,spinner_R,viewModel.endHour)
+            endMin.adapter = ArrayAdapter(this@MainActivity,spinner_R,viewModel.endMin)
         }
         viewModel.fileName.asLiveData().observe(this){
             binding.soundFileName.text = it
