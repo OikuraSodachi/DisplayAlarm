@@ -24,9 +24,13 @@ class DisplayAlarmService : Service() {
     @Inject
     lateinit var dataStore:DataStoreRepository
 
-    private val audioManager by lazy{getSystemService(AUDIO_SERVICE) as AudioManager}
-    private val alarmModel by lazy {AlarmModel(dataStore,audioManager)}
-    private val displayManager by lazy{getSystemService(DISPLAY_SERVICE) as DisplayManager}
+    @Inject
+    lateinit var audioManager: AudioManager
+
+    @Inject
+    lateinit var displayManager: DisplayManager
+
+    private val alarmModel by lazy {AlarmModel(audioManager)}
     private val binder = Binder()
     private val notifications by lazy {
         Notifications(
@@ -47,7 +51,7 @@ class DisplayAlarmService : Service() {
 
         displays.isDisplayOn_setter()
 
-        val soundFilePath = alarmModel.dataStore.filePath
+        val soundFilePath = dataStore.filePath
         val isScreenOn = displays.isScreenOn
 
         val test = combine(

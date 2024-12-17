@@ -4,9 +4,8 @@ import android.media.AudioDeviceInfo
 import android.media.AudioDeviceInfo.TYPE_BUILTIN_SPEAKER
 import android.media.AudioManager
 import android.media.MediaPlayer
-import com.todokanai.displayalarm.repository.DataStoreRepository
 
-class AlarmModel(val dataStore: DataStoreRepository, audioManager: AudioManager) {
+class AlarmModel(audioManager: AudioManager) {
 
     val audioDevices = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
 
