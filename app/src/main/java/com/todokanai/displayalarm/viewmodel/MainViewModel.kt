@@ -26,6 +26,11 @@ class MainViewModel @Inject constructor(private val dataStore:DataStoreRepositor
     val endHour = (0..23).toMutableList()
     val endMin = (0..59).toMutableList()
 
+    val startHourFlow = dataStore.startHourFlow
+    val startMinFlow = dataStore.startMinFlow
+    val endHourFlow = dataStore.endHourFlow
+    val endMinFlow = dataStore.endMinFlow
+
     fun setStartHour(value:Int){
         CoroutineScope(Dispatchers.IO).launch {
             dataStore.saveStartHour(value)
@@ -89,10 +94,21 @@ class MainViewModel @Inject constructor(private val dataStore:DataStoreRepositor
     }
 
     fun saveTime(startHour:Int,startMin:Int,endHour:Int,endMin:Int){
-     //   println("save: $startHour:$startMin ~ $endHour:$endMin")
+        println("save: $startHour:$startMin ~ $endHour:$endMin")
+        CoroutineScope(Dispatchers.IO).launch {
+            dataStore.run{
+                saveStartHour(startHour)
+                saveStartMin(startMin)
+                saveEndHour(endHour)
+                saveEndMin(endMin)
+            }
+        }
 
+        /*
         CoroutineScope(Dispatchers.IO).launch {
             println("${dataStore.getStartHour()}:${dataStore.getStartMin()} ~ ${dataStore.getEndHour()}:${dataStore.getEndMin()}")
         }
+
+         */
     }
 }

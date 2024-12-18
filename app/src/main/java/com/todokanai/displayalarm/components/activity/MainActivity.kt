@@ -34,7 +34,32 @@ class MainActivity : AppCompatActivity() {
                 viewModel.saveFilePath(editText.text.toString())
             }
 
-            spinnerCase1()      // spinner item 선택 즉시 반영 방식
+
+            viewModel.run {
+                startHourFlow.asLiveData().observe(this@MainActivity) {
+                    it?.let { t ->
+                        binding.startHour.setSelection(t)
+                    }
+                }
+                startMinFlow.asLiveData().observe(this@MainActivity){
+                    it?.let { t ->
+                        binding.startMin.setSelection(t)
+                    }
+                }
+                endHourFlow.asLiveData().observe(this@MainActivity){
+                    it?.let { t ->
+                        binding.endHour.setSelection(t)
+                    }
+                }
+                endMinFlow.asLiveData().observe(this@MainActivity){
+                    it?.let{ t ->
+                        binding.endMin.setSelection(t)
+                    }
+                }
+            }       // Todo :이거 어떻게 단순화할수 없나?
+
+
+           // spinnerCase1()      // spinner item 선택 즉시 반영 방식
             spinnerCase2(binding.saveTimeBtn)   // 별도의 save 버튼으로 반영 방식
         }
         viewModel.fileName.asLiveData().observe(this){
