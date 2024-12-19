@@ -69,9 +69,12 @@ class MainActivity : AppCompatActivity() {
         viewModel.fileName.asLiveData().observe(this){
             binding.soundFileName.text = it
         }
+        /*
         viewModel.file.asLiveData().observe(this@MainActivity){
             println("test: $it")
         }
+
+         */
         setContentView(binding.root)
     }
 

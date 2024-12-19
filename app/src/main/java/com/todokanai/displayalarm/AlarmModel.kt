@@ -6,6 +6,8 @@ import android.media.AudioDeviceInfo.TYPE_BUILTIN_SPEAKER
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.net.Uri
+import com.todokanai.displayalarm.abstracts.BaseAlarmModel
+import kotlinx.coroutines.flow.Flow
 
 class AlarmModel() {
 
@@ -14,7 +16,7 @@ class AlarmModel() {
     val mediaPlayer = MediaPlayer().apply {
         isLooping = true
     }
-
+    /*
     fun prepareFile(audioManager: AudioManager,filePath: String, isScreenOn:Boolean){
         mediaPlayer.run {
             if(isScreenOn){
@@ -28,9 +30,11 @@ class AlarmModel() {
         }
     }
 
-    fun prepareFileUri(context: Context,audioManager: AudioManager, uri: Uri, isScreenOn:Boolean){
+     */
+
+    fun prepareFileUri(context: Context, audioManager: AudioManager, uri: Uri, shouldStartAlarm:Boolean){
         mediaPlayer.run {
-            if(isScreenOn){
+            if(shouldStartAlarm){
                 setDataSource(context,uri)
                 //setDataSource(uri)
                 mediaPlayer.preferredDevice = speaker(audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS))        // sound to speaker

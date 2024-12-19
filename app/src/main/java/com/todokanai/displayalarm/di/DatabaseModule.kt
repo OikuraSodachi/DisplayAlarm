@@ -1,6 +1,9 @@
 package com.todokanai.displayalarm.di
 
 import android.content.Context
+import android.hardware.display.DisplayManager
+import android.media.AudioManager
+import com.todokanai.displayalarm.AlarmModelNew
 import com.todokanai.displayalarm.data.room.MyDatabase
 import com.todokanai.displayalarm.repository.DataStoreRepository
 import dagger.Module
@@ -24,5 +27,11 @@ class DatabaseModule {
     @Provides
     fun provideDataStoreRepository(@ApplicationContext context: Context): DataStoreRepository {
         return DataStoreRepository(context)
+    }
+
+    @Singleton
+    @Provides
+    fun provideAlarmModelNew(dataStoreRepository:DataStoreRepository,displayManager: DisplayManager,audioManager: AudioManager):AlarmModelNew{
+        return AlarmModelNew(dataStoreRepository,displayManager,audioManager)
     }
 }

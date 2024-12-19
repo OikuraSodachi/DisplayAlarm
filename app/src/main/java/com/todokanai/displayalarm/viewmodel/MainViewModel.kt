@@ -7,7 +7,10 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.net.toFile
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
+import com.todokanai.displayalarm.di.MyApplication.Companion.appContext
 import com.todokanai.displayalarm.objects.MyObjects.permissions
 import com.todokanai.displayalarm.repository.DataStoreRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,9 +35,9 @@ class MainViewModel @Inject constructor(private val dataStore:DataStoreRepositor
     val endHourFlow = dataStore.endHourFlow
     val endMinFlow = dataStore.endMinFlow
 
-    val file = dataStore.fileUriStringFlow.map{
+    val fileName = dataStore.fileUriStringFlow.map{
         it?.let { t->
-            File(t).absolutePath
+            fileNameConverter(t.toUri())
         }
     }
 
@@ -85,11 +88,6 @@ class MainViewModel @Inject constructor(private val dataStore:DataStoreRepositor
             dataStore.saveFilePath(filePath)
         }
     }
-    val fileName = dataStore.filePath.map{ path ->
-        path?.let {
-            File(it).name
-        }
-    }
 
     fun startService(context: Context, serviceIntent: Intent){
      //   CoroutineScope(Dispatchers.IO).launch {
@@ -122,5 +120,11 @@ class MainViewModel @Inject constructor(private val dataStore:DataStoreRepositor
         CoroutineScope(Dispatchers.IO).launch {
             dataStore.saveFileUriString(uri.toString())
         }
+    }
+
+    /** uri에서 File 이름 추출 **/
+    fun fileNameConverter(uri:Uri):String?{
+
+        return uri.path
     }
 }
