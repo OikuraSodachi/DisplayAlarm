@@ -45,7 +45,6 @@ class AlarmModelNew @Inject constructor(
             speaker(audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS))        // sound to speaker
     }
 
-
     val shouldStartAlarm = combine(
         isInTime,
         isDisplayOn,
