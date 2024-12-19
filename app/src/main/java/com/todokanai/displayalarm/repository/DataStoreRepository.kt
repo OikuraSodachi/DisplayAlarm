@@ -1,6 +1,7 @@
 package com.todokanai.displayalarm.repository
 
 import android.content.Context
+import androidx.core.net.toUri
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.todokanai.displayalarm.abstracts.MyDataStore
@@ -12,6 +13,7 @@ class DataStoreRepository @Inject constructor(appContext: Context): MyDataStore(
     companion object{
         private val DATASTORE_STRING = stringPreferencesKey("datastore_sort_by")
         private val DATASTORE_FILE_PATH = stringPreferencesKey("datastore_file_path")
+        private val DATASTORE_FILE_URI_STRING = stringPreferencesKey("datastore_file_uri")
         private val DATASTORE_START_HOUR = intPreferencesKey("datastore_start_hour")
         private val DATASTORE_START_MIN = intPreferencesKey("datastore_start_min")
         private val DATASTORE_END_HOUR = intPreferencesKey("datastore_end_hour")
@@ -24,6 +26,10 @@ class DataStoreRepository @Inject constructor(appContext: Context): MyDataStore(
     suspend fun saveFilePath(value: String) = DATASTORE_FILE_PATH.save(value)
     suspend fun getFilePath() = DATASTORE_FILE_PATH.value()
     val filePath = DATASTORE_FILE_PATH.flow()
+
+    suspend fun saveFileUriString(value:String) = DATASTORE_FILE_URI_STRING.save(value)
+    suspend fun getFileUriString() = DATASTORE_FILE_URI_STRING.value()?.toUri()
+    val fileUriStringFlow = DATASTORE_FILE_URI_STRING.flow()
 
     suspend fun saveStartHour(value:Int) = DATASTORE_START_HOUR.save(value)
     suspend fun getStartHour() = DATASTORE_START_HOUR.value()

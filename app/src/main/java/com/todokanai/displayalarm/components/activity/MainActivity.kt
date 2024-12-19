@@ -1,5 +1,6 @@
 package com.todokanai.displayalarm.components.activity
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -16,6 +17,10 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
+    companion object {
+        private const val REQUEST_CODE_OPEN_DOCUMENT = 1
+    }
+
     private val binding by lazy{ActivityMainBinding.inflate(layoutInflater)}
     private val serviceIntent by lazy  {Intent(applicationContext, DisplayAlarmService::class.java)}
     private val viewModel:MainViewModel by viewModels()
@@ -31,9 +36,9 @@ class MainActivity : AppCompatActivity() {
                 viewModel.exit(this@MainActivity,serviceIntent)
             }
             selectFileBtn.setOnClickListener {
-                viewModel.saveFilePath(editText.text.toString())
+                //viewModel.saveFilePath(editText.text.toString())
+                openFilePicker()
             }
-
 
             viewModel.run {
                 startHourFlow.asLiveData().observe(this@MainActivity) {
@@ -58,16 +63,17 @@ class MainActivity : AppCompatActivity() {
                 }
             }       // Todo :이거 어떻게 단순화할수 없나?
 
-
            // spinnerCase1()      // spinner item 선택 즉시 반영 방식
             spinnerCase2(binding.saveTimeBtn)   // 별도의 save 버튼으로 반영 방식
         }
         viewModel.fileName.asLiveData().observe(this){
             binding.soundFileName.text = it
         }
+        viewModel.file.asLiveData().observe(this@MainActivity){
+            println("test: $it")
+        }
         setContentView(binding.root)
     }
-
 
     /** spinner item 선택 즉시 반영 방식 **/
     fun spinnerCase1(){
@@ -132,6 +138,34 @@ class MainActivity : AppCompatActivity() {
                     endHour = endHour.selectedItem as Int,
                     endMin = endMin.selectedItem as Int
                 )
+            }
+        }
+    }
+
+    private fun openFilePicker() {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            type = "*/*"
+            addCategory(Intent.CATEGORY_OPENABLE)
+        }
+        startActivityForResult(intent, REQUEST_CODE_OPEN_DOCUMENT)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == REQUEST_CODE_OPEN_DOCUMENT && resultCode == Activity.RESULT_OK) {
+            data?.data?.let { uri ->
+                contentResolver.takePersistableUriPermission(
+                    uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                )
+
+                contentResolver.openInputStream(uri)?.use { inputStream ->
+                    val fileContent = inputStream.readBytes()
+                    println("파일 내용: ${fileContent.size} bytes")
+
+                    viewModel.saveUriString(uri)
+                }
             }
         }
     }

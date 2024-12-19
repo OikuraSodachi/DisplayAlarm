@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
@@ -30,6 +31,12 @@ class MainViewModel @Inject constructor(private val dataStore:DataStoreRepositor
     val startMinFlow = dataStore.startMinFlow
     val endHourFlow = dataStore.endHourFlow
     val endMinFlow = dataStore.endMinFlow
+
+    val file = dataStore.fileUriStringFlow.map{
+        it?.let { t->
+            File(t).absolutePath
+        }
+    }
 
     fun setStartHour(value:Int){
         CoroutineScope(Dispatchers.IO).launch {
@@ -108,7 +115,12 @@ class MainViewModel @Inject constructor(private val dataStore:DataStoreRepositor
         CoroutineScope(Dispatchers.IO).launch {
             println("${dataStore.getStartHour()}:${dataStore.getStartMin()} ~ ${dataStore.getEndHour()}:${dataStore.getEndMin()}")
         }
-
          */
+    }
+
+    fun saveUriString(uri: Uri){
+        CoroutineScope(Dispatchers.IO).launch {
+            dataStore.saveFileUriString(uri.toString())
+        }
     }
 }

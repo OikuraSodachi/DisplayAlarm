@@ -1,9 +1,11 @@
 package com.todokanai.displayalarm
 
+import android.content.Context
 import android.media.AudioDeviceInfo
 import android.media.AudioDeviceInfo.TYPE_BUILTIN_SPEAKER
 import android.media.AudioManager
 import android.media.MediaPlayer
+import android.net.Uri
 
 class AlarmModel() {
 
@@ -17,6 +19,20 @@ class AlarmModel() {
         mediaPlayer.run {
             if(isScreenOn){
                 setDataSource(filePath)
+                mediaPlayer.preferredDevice = speaker(audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS))        // sound to speaker
+                prepare()
+                start()
+            }else{
+                reset()
+            }
+        }
+    }
+
+    fun prepareFileUri(context: Context,audioManager: AudioManager, uri: Uri, isScreenOn:Boolean){
+        mediaPlayer.run {
+            if(isScreenOn){
+                setDataSource(context,uri)
+                //setDataSource(uri)
                 mediaPlayer.preferredDevice = speaker(audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS))        // sound to speaker
                 prepare()
                 start()

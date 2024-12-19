@@ -6,6 +6,7 @@ import android.hardware.display.DisplayManager
 import android.media.AudioManager
 import android.os.Binder
 import android.os.IBinder
+import androidx.core.net.toUri
 import androidx.lifecycle.asLiveData
 import com.todokanai.displayalarm.AlarmModel
 import com.todokanai.displayalarm.notifications.Notifications
@@ -52,16 +53,17 @@ class DisplayAlarmService : Service() {
         displays.isDisplayOn_setter()
 
         val test = combine(
-            dataStore.filePath,
+            dataStore.fileUriStringFlow,
             displays.isScreenOn
         ){ path,screen ->
-            return@combine Pair(path,screen)
+            return@combine Pair(path?.toUri(),screen)
         }
 
         test.asLiveData().observeForever { temp ->
             temp.first?.let {
                 try {
-                    alarmModel.prepareFile(audioManager,it, temp.second)
+                    //alarmModel.prepareFile(audioManager,it, temp.second)
+                    alarmModel.prepareFileUri(this,audioManager,it,temp.second)
                 }catch (e:Exception){
                     e.printStackTrace()
                 }
