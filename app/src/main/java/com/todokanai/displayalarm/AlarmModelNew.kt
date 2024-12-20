@@ -28,7 +28,6 @@ class AlarmModelNew @Inject constructor(
 ):BaseAlarmModel() {
     val defaultDisplay = manager.displays.first()
 
-
     val timeFlowTemp = flowOf(true)
 
     override val isInTime: Flow<Boolean>
@@ -82,7 +81,6 @@ class AlarmModelNew @Inject constructor(
             2 -> {
                 return true
             }
-
             else -> {
                 println("exception")
                 return false
@@ -97,7 +95,7 @@ class AlarmModelNew @Inject constructor(
                 }else{
                     isDisplayOn.value = false
                 }
-                timeChecker.timeTemp()
+                timeChecker.timeTemp_Log()
                 delay(1000)
             }
         }

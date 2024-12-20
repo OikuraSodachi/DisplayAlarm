@@ -8,9 +8,6 @@ import java.util.Calendar
 class TimeChecker(
     dsRepo:DataStoreRepository
 ) {
-  //  /** 하루 = 86400초 **/
- //   val day : Long = 86400
-
     private val startTime : Flow<Long> = combine(
         dsRepo.startHourFlow,
         dsRepo.startMinFlow
@@ -29,35 +26,24 @@ class TimeChecker(
         (h*3600000 + m*60000).toLong()
     }
 
-
-    /** 하루 = 86400초 **/
+    /** 하루 = 86400초 (1초 = 1000 millisecond )**/
     private val day : Long = 86400000
 
     /** return current time in Long format **/
     fun time():Long{
         val date = Calendar.getInstance().time
-        val hour = date.hours
-        val min = date.minutes
-        println("hour: $hour, min: $min")
-        println("test: ${date}")
-        println("time: ${date.time%day}")
-
-        val h = hour*3600000L
-        val m = min*60000L
-        val sum : Long = h+m
-        println("sum: ${h+m}")
-
+        val hour = date.hours*3600000L
+        val min = date.minutes*60000L
+        val sum : Long = hour+min
         return sum
     }
 
-    fun timeTemp(){
+    fun timeTemp_Log(){
         val date = Calendar.getInstance().time
         val hour = date.hours
         val min = date.minutes
         println("hour: $hour, min: $min")
         println("test: ${date}")
-    //    println("time: ${date.time%day}")
-
         val h = hour*3600000
         val m = min*60000
         println("sum: ${h+m}")
