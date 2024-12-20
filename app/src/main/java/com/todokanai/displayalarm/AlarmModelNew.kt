@@ -23,7 +23,8 @@ import javax.inject.Inject
 class AlarmModelNew @Inject constructor(
     val dsRepo:DataStoreRepository,
     val manager:DisplayManager,
-    val audioManager: AudioManager
+    val audioManager: AudioManager,
+    val timeChecker: TimeChecker
 ):BaseAlarmModel() {
     val defaultDisplay = manager.displays.first()
 
@@ -31,7 +32,7 @@ class AlarmModelNew @Inject constructor(
     val timeFlowTemp = flowOf(true)
 
     override val isInTime: Flow<Boolean>
-        get() = timeFlowTemp
+        get() = timeChecker.isInTime
 
     override val fileUri = dsRepo.fileUriStringFlow.map {
         it?.toUri()
@@ -96,6 +97,7 @@ class AlarmModelNew @Inject constructor(
                 }else{
                     isDisplayOn.value = false
                 }
+                timeChecker.timeTemp()
                 delay(1000)
             }
         }

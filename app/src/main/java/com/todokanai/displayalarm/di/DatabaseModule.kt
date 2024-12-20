@@ -4,6 +4,7 @@ import android.content.Context
 import android.hardware.display.DisplayManager
 import android.media.AudioManager
 import com.todokanai.displayalarm.AlarmModelNew
+import com.todokanai.displayalarm.TimeChecker
 import com.todokanai.displayalarm.data.room.MyDatabase
 import com.todokanai.displayalarm.repository.DataStoreRepository
 import dagger.Module
@@ -31,7 +32,13 @@ class DatabaseModule {
 
     @Singleton
     @Provides
-    fun provideAlarmModelNew(dataStoreRepository:DataStoreRepository,displayManager: DisplayManager,audioManager: AudioManager):AlarmModelNew{
-        return AlarmModelNew(dataStoreRepository,displayManager,audioManager)
+    fun provideAlarmModelNew(dataStoreRepository:DataStoreRepository,displayManager: DisplayManager,audioManager: AudioManager,timeChecker: TimeChecker):AlarmModelNew{
+        return AlarmModelNew(dataStoreRepository,displayManager,audioManager,timeChecker)
+    }
+
+    @Singleton
+    @Provides
+    fun provideTimeChecker(dataStoreRepository: DataStoreRepository):TimeChecker{
+        return TimeChecker(dataStoreRepository)
     }
 }

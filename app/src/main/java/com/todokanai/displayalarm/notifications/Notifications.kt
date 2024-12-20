@@ -4,7 +4,9 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.Service
 import android.content.Context
+import android.content.pm.ServiceInfo
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED
+import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.ServiceCompat.startForeground
@@ -21,7 +23,13 @@ class Notifications(
     fun createChannel(service: Service){
         notificationManager.createNotificationChannel(serviceChannel)
         val notification = notification(service)
-        startForeground(service,1,notification,FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED)
+        val type =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_MANIFEST
+            } else {
+                0
+            }
+        startForeground(service,1,notification,type)
     }
 
     fun notification(context: Context): Notification {
