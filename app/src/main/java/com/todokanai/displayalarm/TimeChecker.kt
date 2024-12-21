@@ -10,25 +10,25 @@ import java.util.Date
 import javax.inject.Inject
 
 class TimeChecker @Inject constructor(
-    dsRepo:DataStoreRepository
+    val dsRepo:DataStoreRepository
 ) {
 
-    private val startTime : Flow<Long> = combine(
+    val startTime : Flow<Long> = combine(
         dsRepo.startHourFlow,
         dsRepo.startMinFlow
     ){ hour, min ->
-        val h = hour?:0
-        val m = min?:0
-        (h* HOUR_MILLI + m* MIN_MILLI).toLong()
+        val h = hour ?:0
+        val m = min ?:0
+        h* HOUR_MILLI + m* MIN_MILLI
     }
 
     private val endTime : Flow<Long> = combine(
         dsRepo.endHourFlow,
         dsRepo.endMinFlow
     ){ hour, min ->
-        val h = hour?:0
-        val m = min?:0
-        (h* HOUR_MILLI + m* MIN_MILLI).toLong()
+        val h = hour ?:0
+        val m = min ?:0
+        h* HOUR_MILLI + m* MIN_MILLI
     }
 
     /** return current time in Long format **/
@@ -37,9 +37,12 @@ class TimeChecker @Inject constructor(
         return date.toTimeMilli()
     }
 
-    fun timeTemp_Log(){
+    suspend fun timeTemp_Log(){
         val date = Calendar.getInstance().time
+        println("start: ${dsRepo.getStartHour()}")
         println("dateToTimeMilli: ${date.toTimeMilli()}")
+        println("end: ${dsRepo.getEndHour()}")
+      //  println("end: ${endTime.first()}")
     }
 
     val isInTime : Flow<Boolean> = combine(
@@ -47,7 +50,6 @@ class TimeChecker @Inject constructor(
         endTime
     ){ start,end ->
         val time = Calendar.getInstance().time.toTimeMilli()
-
         if(start<=time && time<=end){
             true
         }else{
