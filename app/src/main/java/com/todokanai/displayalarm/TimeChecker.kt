@@ -1,20 +1,25 @@
 package com.todokanai.displayalarm
 
+import com.todokanai.displayalarm.objects.Constants.HOUR_MILLI
+import com.todokanai.displayalarm.objects.Constants.MIN_MILLI
 import com.todokanai.displayalarm.repository.DataStoreRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import java.util.Calendar
+import java.util.Date
+import javax.inject.Inject
 
-class TimeChecker(
+class TimeChecker @Inject constructor(
     dsRepo:DataStoreRepository
 ) {
+
     private val startTime : Flow<Long> = combine(
         dsRepo.startHourFlow,
         dsRepo.startMinFlow
     ){ hour, min ->
         val h = hour?:0
         val m = min?:0
-        (h*3600000 + m*60000).toLong()
+        (h* HOUR_MILLI + m* MIN_MILLI).toLong()
     }
 
     private val endTime : Flow<Long> = combine(
@@ -23,40 +28,37 @@ class TimeChecker(
     ){ hour, min ->
         val h = hour?:0
         val m = min?:0
-        (h*3600000 + m*60000).toLong()
+        (h* HOUR_MILLI + m* MIN_MILLI).toLong()
     }
-
-    /** 하루 = 86400초 (1초 = 1000 millisecond )**/
-    private val day : Long = 86400000
 
     /** return current time in Long format **/
     fun time():Long{
         val date = Calendar.getInstance().time
-        val hour = date.hours*3600000L
-        val min = date.minutes*60000L
-        val sum : Long = hour+min
-        return sum
+        return date.toTimeMilli()
     }
 
     fun timeTemp_Log(){
         val date = Calendar.getInstance().time
-        val hour = date.hours
-        val min = date.minutes
-        println("hour: $hour, min: $min")
-        println("test: ${date}")
-        val h = hour*3600000
-        val m = min*60000
-        println("sum: ${h+m}")
+        println("dateToTimeMilli: ${date.toTimeMilli()}")
     }
 
     val isInTime : Flow<Boolean> = combine(
         startTime,
         endTime
     ){ start,end ->
-        if(start<=time() && time()<=end){
+        val time = Calendar.getInstance().time.toTimeMilli()
+
+        if(start<=time && time<=end){
             true
         }else{
             false
         }
+    }
+
+    /** hour : minute 값을 millisecond 으로 변환**/
+    private fun Date.toTimeMilli():Long{
+        val hour = this.hours
+        val min = this.minutes
+        return (hour*HOUR_MILLI + min*MIN_MILLI)
     }
 }
