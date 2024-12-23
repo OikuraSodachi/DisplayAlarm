@@ -7,10 +7,8 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.net.toFile
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
-import com.todokanai.displayalarm.di.MyApplication.Companion.appContext
 import com.todokanai.displayalarm.objects.MyObjects.permissions
 import com.todokanai.displayalarm.repository.DataStoreRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +16,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import java.io.File
 import javax.inject.Inject
 import kotlin.system.exitProcess
 
@@ -71,7 +68,6 @@ class MainViewModel @Inject constructor(private val dataStore:DataStoreRepositor
 
     fun isPermissionGranted(activity: Activity):Boolean{
         val permission = permissions.first()
-
         return ContextCompat.checkSelfPermission(activity,permission) == PackageManager.PERMISSION_GRANTED
     }
 
@@ -90,12 +86,7 @@ class MainViewModel @Inject constructor(private val dataStore:DataStoreRepositor
     }
 
     fun startService(context: Context, serviceIntent: Intent){
-     //   CoroutineScope(Dispatchers.IO).launch {
-            ///fileToPlay = dataStore.getFilePath()
-            //   value 방식 대신 flow 활용하기
-      //  }.invokeOnCompletion {
-            ContextCompat.startForegroundService(context, serviceIntent)
-     //   }
+        ContextCompat.startForegroundService(context, serviceIntent)
     }
 
     fun saveTime(startHour:Int,startMin:Int,endHour:Int,endMin:Int){
@@ -108,12 +99,6 @@ class MainViewModel @Inject constructor(private val dataStore:DataStoreRepositor
                 saveEndMin(endMin)
             }
         }
-
-        /*
-        CoroutineScope(Dispatchers.IO).launch {
-            println("${dataStore.getStartHour()}:${dataStore.getStartMin()} ~ ${dataStore.getEndHour()}:${dataStore.getEndMin()}")
-        }
-         */
     }
 
     fun saveUriString(uri: Uri){
@@ -124,7 +109,6 @@ class MainViewModel @Inject constructor(private val dataStore:DataStoreRepositor
 
     /** uri에서 File 이름 추출 **/
     fun fileNameConverter(uri:Uri):String?{
-
         return uri.path
     }
 }

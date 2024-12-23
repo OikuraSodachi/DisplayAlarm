@@ -1,7 +1,10 @@
 package com.todokanai.displayalarm.components.service
 
 import android.app.Service
+import android.content.Context
 import android.content.Intent
+import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Binder
 import android.os.IBinder
 import androidx.lifecycle.asLiveData
@@ -10,6 +13,9 @@ import com.todokanai.displayalarm.notifications.Notifications
 import com.todokanai.displayalarm.objects.Constants.CHANNEL_ID
 import com.todokanai.displayalarm.objects.MyObjects.serviceChannel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -35,19 +41,41 @@ class DisplayAlarmService : Service() {
     override fun onCreate() {
         super.onCreate()
         notifications.createChannel(this)
-        alarmModel.startObserveDisplay()
-
-        alarmModel.shouldStartAlarm.asLiveData().observeForever{
-            alarmModel.prepareFileUri(
-                context = this,
-                uri =it.second,
-                shouldStartAlarm = it.first
-            )
+        alarmModel.run {
+            CoroutineScope(Dispatchers.Default).launch {
+                while(true){
+                    checkDisplayState()
+                }
+            }
+            shouldStartAlarm.asLiveData().observeForever {
+                prepareFileUri(
+                    alarmModel.mediaPlayer,
+                    this@DisplayAlarmService,
+                    it.second,
+                    it.first
+                )
+            }
         }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         notifications.postNotification(this)
         return super.onStartCommand(intent, flags, startId)
+    }
+    /** == start Alarm **/
+    private fun prepareFileUri(mediaPlayer : MediaPlayer, context: Context, uri: Uri?, shouldStartAlarm:Boolean){
+        mediaPlayer.run {
+            if(shouldStartAlarm){
+                if(uri==null){
+                    println("DisplayAlarmService: file uri is null")
+                }else{
+                    setDataSource(context, uri)
+                    prepare()
+                    start()
+                }
+            }else{
+                reset()
+            }
+        }
     }
 }

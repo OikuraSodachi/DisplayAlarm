@@ -1,8 +1,9 @@
 package com.todokanai.displayalarm.di
 
 import android.content.Context
-import android.hardware.display.DisplayManager
-import android.media.AudioManager
+import android.media.MediaPlayer
+import android.view.Display
+import androidx.core.net.toUri
 import com.todokanai.displayalarm.AlarmModel
 import com.todokanai.displayalarm.TimeChecker
 import com.todokanai.displayalarm.data.room.MyDatabase
@@ -12,6 +13,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.flow.map
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -32,13 +34,23 @@ class DatabaseModule {
 
     @Singleton
     @Provides
-    fun provideAlarmModel(dataStoreRepository:DataStoreRepository,displayManager: DisplayManager,audioManager: AudioManager,timeChecker: TimeChecker):AlarmModel{
-        return AlarmModel(dataStoreRepository,displayManager,audioManager,timeChecker)
+    fun provideAlarmModel(dataStoreRepository:DataStoreRepository,timeChecker: TimeChecker,mediaPlayer: MediaPlayer,defaultDisplay: Display):AlarmModel{
+        return AlarmModel(
+            dataStoreRepository.fileUriStringFlow.map{it?.toUri()},
+            timeChecker.isInTime,
+            mediaPlayer,
+            defaultDisplay
+        )
     }
 
     @Singleton
     @Provides
     fun provideTimeChecker(dataStoreRepository: DataStoreRepository):TimeChecker{
-        return TimeChecker(dataStoreRepository)
+        return TimeChecker(
+            dataStoreRepository.startHourFlow,
+            dataStoreRepository.startMinFlow,
+            dataStoreRepository.endHourFlow,
+            dataStoreRepository.endMinFlow
+        )
     }
 }
