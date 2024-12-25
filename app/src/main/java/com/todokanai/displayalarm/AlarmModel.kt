@@ -10,12 +10,11 @@ import javax.inject.Inject
 
 class AlarmModel @Inject constructor(
     val fileUri:Flow<Uri?>,
-    override val isInTime:Flow<Boolean>,
+    val isInTime:Flow<Boolean>,
     val mediaPlayer: MediaPlayer,
     defaultDisplay: Display
 ):BaseAlarmModel(
-    defaultDisplay,
-    isInTime
+    defaultDisplay
 ) {
 
     override val shouldStartAlarm: Flow<Pair<Boolean, Uri?>>
@@ -26,6 +25,22 @@ class AlarmModel @Inject constructor(
         ){ inTime,displayOn,uri->
             return@combine Pair(inTime&&displayOn,uri)
         }
+
+    /** DeX 모드 켜면 Intent.ACTION_SCREEN_ON/OFF 가 Receiver에 수신되지 않는 현상 있음 **/
+    override fun getDisplayState(): Boolean {
+        when (defaultDisplay.state) {
+            1 -> {
+                return false
+            }
+            2 -> {
+                return true
+            }
+            else -> {
+                println("exception")
+                return false
+            }
+        }
+    }
 
     override suspend fun checkDisplayState() {
         super.checkDisplayState()
