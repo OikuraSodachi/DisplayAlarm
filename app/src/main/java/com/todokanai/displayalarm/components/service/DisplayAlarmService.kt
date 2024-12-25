@@ -1,8 +1,5 @@
 package com.todokanai.displayalarm.components.service
 
-import android.content.Context
-import android.content.Intent
-import android.media.MediaPlayer
 import android.net.Uri
 import com.todokanai.displayalarm.AlarmModel
 import com.todokanai.displayalarm.abstracts.AlarmService
@@ -36,7 +33,6 @@ class DisplayAlarmService() : AlarmService() {
 
     override fun onCreate() {
         super.onCreate()
-        notifications.createChannel(this)
         alarmModel.run {
             CoroutineScope(Dispatchers.Default).launch {
                 while(true){
@@ -46,18 +42,13 @@ class DisplayAlarmService() : AlarmService() {
         }
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        notifications.postNotification(this)
-        return super.onStartCommand(intent, flags, startId)
-    }
-    /** == start Alarm **/
-    private fun prepareFileUri(mediaPlayer : MediaPlayer, context: Context, uri: Uri?, shouldStartAlarm:Boolean) {
-        mediaPlayer.run {
-            if (shouldStartAlarm) {
+    override fun onStartAlarm(isDisplayOn: Boolean, uri: Uri?) {
+        alarmModel.mediaPlayer.run {
+            if (isDisplayOn) {
                 if (uri == null) {
                     println("DisplayAlarmService: file uri is null")
                 } else {
-                    setDataSource(context, uri)
+                    setDataSource(this@DisplayAlarmService, uri)
                     prepare()
                     start()
                 }
@@ -67,12 +58,11 @@ class DisplayAlarmService() : AlarmService() {
         }
     }
 
-    override fun onStartAlarm(isDisplayOn: Boolean, uri: Uri?) {
-        prepareFileUri(
-            alarmModel.mediaPlayer,
-            this@DisplayAlarmService,
-            uri,
-            isDisplayOn
-        )
+    override fun onPostNotification() {
+        notifications.postNotification(this)
+    }
+
+    override fun onCreateNotificationChannel() {
+        notifications.createChannel(this)
     }
 }
