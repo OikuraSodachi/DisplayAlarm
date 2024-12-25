@@ -1,31 +1,28 @@
 package com.todokanai.displayalarm.components.service
 
-import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.media.MediaPlayer
 import android.net.Uri
-import android.os.Binder
-import android.os.IBinder
-import androidx.lifecycle.asLiveData
 import com.todokanai.displayalarm.AlarmModel
+import com.todokanai.displayalarm.abstracts.AlarmService
 import com.todokanai.displayalarm.notifications.Notifications
 import com.todokanai.displayalarm.objects.Constants.CHANNEL_ID
 import com.todokanai.displayalarm.objects.MyObjects.serviceChannel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class DisplayAlarmService : Service() {
+class DisplayAlarmService() : AlarmService() {
     //알림 권한 요청 추가할것
 
     @Inject
     lateinit var alarmModel:AlarmModel
 
-    private val binder = Binder()
     private val notifications by lazy {
         Notifications(
             service = this,
@@ -34,9 +31,8 @@ class DisplayAlarmService : Service() {
         )
     }
 
-    override fun onBind(intent: Intent): IBinder {
-        return binder
-    }
+    override val shouldStartAlarm: Flow<Pair<Boolean, Uri?>>
+        get() = alarmModel.shouldStartAlarm
 
     override fun onCreate() {
         super.onCreate()
@@ -47,14 +43,6 @@ class DisplayAlarmService : Service() {
                     checkDisplayState()
                 }
             }
-            shouldStartAlarm.asLiveData().observeForever {
-                prepareFileUri(
-                    alarmModel.mediaPlayer,
-                    this@DisplayAlarmService,
-                    it.second,
-                    it.first
-                )
-            }
         }
     }
 
@@ -63,19 +51,28 @@ class DisplayAlarmService : Service() {
         return super.onStartCommand(intent, flags, startId)
     }
     /** == start Alarm **/
-    private fun prepareFileUri(mediaPlayer : MediaPlayer, context: Context, uri: Uri?, shouldStartAlarm:Boolean){
+    private fun prepareFileUri(mediaPlayer : MediaPlayer, context: Context, uri: Uri?, shouldStartAlarm:Boolean) {
         mediaPlayer.run {
-            if(shouldStartAlarm){
-                if(uri==null){
+            if (shouldStartAlarm) {
+                if (uri == null) {
                     println("DisplayAlarmService: file uri is null")
-                }else{
+                } else {
                     setDataSource(context, uri)
                     prepare()
                     start()
                 }
-            }else{
+            } else {
                 reset()
             }
         }
+    }
+
+    override fun onStartAlarm(isDisplayOn: Boolean, uri: Uri?) {
+        prepareFileUri(
+            alarmModel.mediaPlayer,
+            this@DisplayAlarmService,
+            uri,
+            isDisplayOn
+        )
     }
 }

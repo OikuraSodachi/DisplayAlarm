@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
 
 class AlarmModel @Inject constructor(
-    private val fileUri:Flow<Uri?>,
+    val fileUri:Flow<Uri?>,
     override val isInTime:Flow<Boolean>,
     val mediaPlayer: MediaPlayer,
     defaultDisplay: Display
