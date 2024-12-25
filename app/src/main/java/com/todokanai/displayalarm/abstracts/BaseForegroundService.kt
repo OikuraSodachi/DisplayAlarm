@@ -6,10 +6,11 @@ import android.os.Binder
 import android.os.IBinder
 import androidx.core.app.NotificationManagerCompat
 
-abstract class BaseForegroundService:Service() {
+/** Foreground Service with single Notification Channel ([android.app.NotificationChannel]) **/
+abstract class BaseForegroundService: Service() {
 
     private val binder = Binder()
-    val notificationManager by lazy{NotificationManagerCompat.from(this)}
+    val notificationManager by lazy{ NotificationManagerCompat.from(this)}
 
     override fun onBind(intent: Intent): IBinder {
         return binder
