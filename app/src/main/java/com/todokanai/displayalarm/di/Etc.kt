@@ -6,6 +6,9 @@ import android.media.AudioManager
 import android.media.AudioManager.GET_DEVICES_OUTPUTS
 import android.media.MediaPlayer
 import android.view.Display
+import com.todokanai.displayalarm.AlarmModel
+import com.todokanai.displayalarm.TimeChecker
+import com.todokanai.displayalarm.repository.DataStoreRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,5 +32,26 @@ class Etc {
     @Provides
     fun provideDefaultDisplay(displayManager: DisplayManager):Display{
         return displayManager.displays.first()
+    }
+
+    @Singleton
+    @Provides
+    fun provideAlarmModel(timeChecker: TimeChecker, mediaPlayer: MediaPlayer, defaultDisplay: Display): AlarmModel {
+        return AlarmModel(
+            timeChecker.isInTime,
+            mediaPlayer,
+            defaultDisplay
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideTimeChecker(dataStoreRepository: DataStoreRepository):TimeChecker{
+        return TimeChecker(
+            dataStoreRepository.startHourFlow,
+            dataStoreRepository.startMinFlow,
+            dataStoreRepository.endHourFlow,
+            dataStoreRepository.endMinFlow
+        )
     }
 }

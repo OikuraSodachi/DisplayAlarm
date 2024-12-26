@@ -1,11 +1,11 @@
 package com.todokanai.displayalarm.components.service
 
-import android.net.Uri
 import com.todokanai.displayalarm.AlarmModel
 import com.todokanai.displayalarm.abstracts.AlarmService
 import com.todokanai.displayalarm.notifications.Notifications
 import com.todokanai.displayalarm.objects.Constants.CHANNEL_ID
 import com.todokanai.displayalarm.objects.MyObjects.serviceChannel
+import com.todokanai.displayalarm.repository.DataStoreRepository
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,6 +21,9 @@ class DisplayAlarmService() : AlarmService() {
     @Inject
     lateinit var alarmModel:AlarmModel
 
+    @Inject
+    lateinit var dsRepo:DataStoreRepository
+
     private val notifications by lazy {
         Notifications(
             service = this,
@@ -29,7 +32,7 @@ class DisplayAlarmService() : AlarmService() {
         )
     }
 
-    override val shouldStartAlarm: Flow<Pair<Boolean, Uri?>>
+    override val shouldStartAlarm: Flow<Boolean>
         get() = alarmModel.shouldStartAlarm
 
     override fun onCreate() {
@@ -44,7 +47,8 @@ class DisplayAlarmService() : AlarmService() {
         }
     }
 
-    override fun onStartAlarm(isDisplayOn: Boolean, uri: Uri?) {
+    override suspend fun onStartAlarm(isDisplayOn: Boolean) {
+        val uri = dsRepo.getFileUri()
         alarmModel.mediaPlayer.run {
             if (isDisplayOn) {
                 if (uri == null) {

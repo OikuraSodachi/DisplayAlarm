@@ -14,36 +14,27 @@ class TimeChecker @Inject constructor(
     endHourFlow:Flow<Int?>,
     endMinFlow:Flow<Int?>
 ) {
+    private val calendarInstance = Calendar.getInstance()
 
-    val startTime : Flow<Long> = combine(
+    private val startTime : Flow<Long> = combine(
         startHourFlow,
         startMinFlow
     ){ hour, min ->
-        val h = hour ?:0
-        val m = min ?:0
-        h* HOUR_MILLI + m* MIN_MILLI
+        (hour ?:0) * HOUR_MILLI + (min ?:0)* MIN_MILLI
     }
 
     private val endTime : Flow<Long> = combine(
         endHourFlow,
         endMinFlow
     ){ hour, min ->
-        val h = hour ?:0
-        val m = min ?:0
-        h* HOUR_MILLI + m* MIN_MILLI
-    }
-
-    /** return current time in Long format **/
-    fun time():Long{
-        val date = Calendar.getInstance().time
-        return date.toTimeMilli()
+        (hour ?:0) * HOUR_MILLI + (min ?:0)* MIN_MILLI
     }
 
     val isInTime : Flow<Boolean> = combine(
         startTime,
         endTime
     ){ start,end ->
-        val time = Calendar.getInstance().time.toTimeMilli()
+        val time = calendarInstance.time.toTimeMilli()
         if(start<=time && time<=end){
             true
         }else{
@@ -53,8 +44,6 @@ class TimeChecker @Inject constructor(
 
     /** hour : minute 값을 millisecond 으로 변환**/
     private fun Date.toTimeMilli():Long{
-        val hour = this.hours
-        val min = this.minutes
-        return (hour*HOUR_MILLI + min*MIN_MILLI)
+        return (this.hours*HOUR_MILLI + this.minutes*MIN_MILLI)
     }
 }

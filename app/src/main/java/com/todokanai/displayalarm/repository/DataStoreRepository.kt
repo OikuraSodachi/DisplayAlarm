@@ -29,6 +29,7 @@ class DataStoreRepository @Inject constructor(appContext: Context): MyDataStore(
 
     suspend fun saveFileUriString(value:String) = DATASTORE_FILE_URI_STRING.save(value)
     suspend fun getFileUriString() = DATASTORE_FILE_URI_STRING.value()?.toUri()
+    suspend fun getFileUri() = DATASTORE_FILE_URI_STRING.value()?.toUri()
     val fileUriStringFlow = DATASTORE_FILE_URI_STRING.flow()
 
     suspend fun saveStartHour(value:Int) = DATASTORE_START_HOUR.save(value)
