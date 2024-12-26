@@ -12,7 +12,7 @@ abstract class BaseAlarmModel(
     abstract fun getDisplayState():Boolean
 
     /** [isDisplayOn]에 display state 값 반영 **/
-    open suspend fun onCheckDisplayState(){
+    fun onCheckDisplayState(){
         isDisplayOn.value = getDisplayState()
     }
 }

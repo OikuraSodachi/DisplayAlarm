@@ -17,8 +17,8 @@ abstract class BaseForegroundService: Service() {
     }
 
     override fun onCreate() {
-        onCreateNotificationChannel()
         super.onCreate()
+        onCreateNotificationChannel()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {

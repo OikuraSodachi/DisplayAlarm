@@ -10,13 +10,13 @@ import kotlinx.coroutines.flow.shareIn
 abstract class AlarmService(): BaseForegroundService() {
 
     override fun onCreate() {
+        super.onCreate()
         shouldStartAlarm.map{
             onStartAlarm(it)
         }.shareIn(
             scope = CoroutineScope(Dispatchers.Default),
             started = SharingStarted.Eagerly
         )
-        super.onCreate()
     }
 
     abstract suspend fun onStartAlarm(isDisplayOn:Boolean)
