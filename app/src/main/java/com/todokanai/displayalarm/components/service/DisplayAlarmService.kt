@@ -9,6 +9,7 @@ import com.todokanai.displayalarm.objects.MyObjects.serviceChannel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -28,15 +29,15 @@ class DisplayAlarmService() : AlarmService() {
         )
     }
 
-    override val shouldStartAlarm: Flow<Pair<Boolean, Uri?>>
-        get() = alarmModel.shouldStartAlarm
+    override val shouldStartAlarm: Flow<Pair<Boolean, Uri?>> = alarmModel.shouldStartAlarm
 
     override fun onCreate() {
         super.onCreate()
         alarmModel.run {
             CoroutineScope(Dispatchers.Default).launch {
                 while(true){
-                    checkDisplayState()
+                    onCheckDisplayState()
+                    delay(1000)
                 }
             }
         }

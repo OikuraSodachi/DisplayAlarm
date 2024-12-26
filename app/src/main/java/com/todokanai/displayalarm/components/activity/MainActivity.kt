@@ -14,6 +14,8 @@ import com.todokanai.displayalarm.databinding.ActivityMainBinding
 import com.todokanai.displayalarm.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
+/** Todo: DeX 모드 켜면 Intent.ACTION_SCREEN_ON/OFF 가 Receiver에 수신되지 않는 현상 있음 **/
+
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 

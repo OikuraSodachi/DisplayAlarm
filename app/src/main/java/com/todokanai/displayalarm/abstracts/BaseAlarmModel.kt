@@ -15,7 +15,7 @@ abstract class BaseAlarmModel(
     abstract val shouldStartAlarm:Flow<Pair<Boolean,Uri?>>
 
     /** [isDisplayOn]에 display state 값 반영 **/
-    open suspend fun checkDisplayState(){
+    open suspend fun onCheckDisplayState(){
         isDisplayOn.value = getDisplayState()
     }
 }
