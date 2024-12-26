@@ -29,7 +29,8 @@ class DisplayAlarmService() : AlarmService() {
         )
     }
 
-    override val shouldStartAlarm: Flow<Pair<Boolean, Uri?>> = alarmModel.shouldStartAlarm
+    override val shouldStartAlarm: Flow<Pair<Boolean, Uri?>>
+        get() = alarmModel.shouldStartAlarm
 
     override fun onCreate() {
         super.onCreate()
