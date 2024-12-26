@@ -11,6 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -33,7 +34,13 @@ class DisplayAlarmService() : AlarmService() {
     }
 
     override val shouldStartAlarm: Flow<Boolean>
-        get() = alarmModel.shouldStartAlarm
+        get() = combine(
+            alarmModel.isInTime,
+            alarmModel.isDisplayOn
+        ){ inTime,displayOn ->
+            return@combine inTime&&displayOn
+        }
+
 
     override fun onCreate() {
         super.onCreate()

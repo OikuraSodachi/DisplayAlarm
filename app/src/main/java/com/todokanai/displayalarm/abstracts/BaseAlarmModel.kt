@@ -1,7 +1,6 @@
 package com.todokanai.displayalarm.abstracts
 
 import android.view.Display
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
 abstract class BaseAlarmModel(
@@ -11,8 +10,6 @@ abstract class BaseAlarmModel(
     val isDisplayOn = MutableStateFlow(false)
 
     abstract fun getDisplayState():Boolean
-
-    abstract val shouldStartAlarm:Flow<Boolean>
 
     /** [isDisplayOn]에 display state 값 반영 **/
     open suspend fun onCheckDisplayState(){

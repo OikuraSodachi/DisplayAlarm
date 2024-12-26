@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 
-/** Todo: AlarmModel을 여기에 통합하기? **/
 abstract class AlarmService(): BaseForegroundService() {
 
     override fun onCreate() {
@@ -20,9 +19,8 @@ abstract class AlarmService(): BaseForegroundService() {
         super.onCreate()
     }
 
-    open suspend fun onStartAlarm(isDisplayOn:Boolean){
+    abstract suspend fun onStartAlarm(isDisplayOn:Boolean)
 
-    }
     abstract val shouldStartAlarm:Flow<Boolean>
 
 }
