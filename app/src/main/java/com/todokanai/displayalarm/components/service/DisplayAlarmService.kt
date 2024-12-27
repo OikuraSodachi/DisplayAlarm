@@ -1,5 +1,6 @@
 package com.todokanai.displayalarm.components.service
 
+import android.hardware.display.DisplayManager
 import android.media.MediaPlayer
 import android.view.Display
 import com.todokanai.displayalarm.TimeChecker
@@ -18,20 +19,23 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class DisplayAlarmService() : AlarmService() {
+class DisplayAlarmService : AlarmService() {
     //알림 권한 요청 추가할것
 
     @Inject
     lateinit var dsRepo:DataStoreRepository
 
     @Inject
-    override lateinit var defaultDisplay:Display
-
-    @Inject
     lateinit var timeChecker: TimeChecker
 
     @Inject
     lateinit var mediaPlayer: MediaPlayer
+
+    @Inject
+    lateinit var displayManager: DisplayManager
+
+    override val defaultDisplay: Display
+        get() = displayManager.displays.first()
 
     private val notifications by lazy {
         Notifications(
@@ -41,7 +45,6 @@ class DisplayAlarmService() : AlarmService() {
         )
     }
 
-
     override val shouldStartAlarm: Flow<Boolean>
         get() = combine(
             timeChecker.isInTime,
@@ -50,17 +53,14 @@ class DisplayAlarmService() : AlarmService() {
             return@combine inTime&&displayOn
         }
 
-
     override fun onCreate() {
         super.onCreate()
-      //  alarmModel.run {
-            CoroutineScope(Dispatchers.Default).launch {
-                while(true){
-                    onCheckDisplayState()
-                    delay(1000)
-                }
+        CoroutineScope(Dispatchers.Default).launch {
+            while(true){
+                onCheckDisplayState()
+                delay(1000)
             }
-        //}
+        }
     }
 
     override suspend fun onStartAlarm(isDisplayOn: Boolean) {

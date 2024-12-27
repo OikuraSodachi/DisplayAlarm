@@ -1,15 +1,13 @@
 package com.todokanai.displayalarm.abstracts
 
 import android.view.Display
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 
-abstract class AlarmService(): BaseForegroundService() {
+abstract class AlarmService: BaseForegroundService() {
 
     abstract val defaultDisplay: Display
 
@@ -43,7 +41,7 @@ abstract class AlarmService(): BaseForegroundService() {
         shouldStartAlarm.map{
             onStartAlarm(it)
         }.shareIn(
-            scope = CoroutineScope(Dispatchers.Default),
+            scope = serviceScope,
             started = SharingStarted.Eagerly
         )
     }
@@ -51,5 +49,6 @@ abstract class AlarmService(): BaseForegroundService() {
     abstract suspend fun onStartAlarm(isDisplayOn:Boolean)
 
     abstract val shouldStartAlarm:Flow<Boolean>
+
 
 }
