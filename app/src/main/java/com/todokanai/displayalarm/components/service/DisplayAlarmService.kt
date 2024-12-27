@@ -3,6 +3,7 @@ package com.todokanai.displayalarm.components.service
 import android.hardware.display.DisplayManager
 import android.media.MediaPlayer
 import android.view.Display
+import com.todokanai.displayalarm.TestModel
 import com.todokanai.displayalarm.TimeChecker
 import com.todokanai.displayalarm.abstracts.AlarmService
 import com.todokanai.displayalarm.notifications.Notifications
@@ -12,16 +13,19 @@ import com.todokanai.displayalarm.repository.DataStoreRepository
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class DisplayAlarmService : AlarmService() {
     //알림 권한 요청 추가할것
+
+    @Inject
+    lateinit var testModel: TestModel
 
     @Inject
     lateinit var dsRepo:DataStoreRepository
@@ -56,9 +60,11 @@ class DisplayAlarmService : AlarmService() {
 
     override fun onCreate() {
         super.onCreate()
+        testModel.init(serviceScope)        // 나중에 제거할 것
         CoroutineScope(Dispatchers.Default).launch {
             while(true){
                 onCheckDisplayState()
+                println("active: ${serviceScope.isActive}")
                 delay(1000)
             }
         }

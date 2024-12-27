@@ -39,7 +39,7 @@ abstract class BaseForegroundService: Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        serviceContext.cancel()
+        serviceScope.cancel()
     }
 
     abstract fun onPostNotification()

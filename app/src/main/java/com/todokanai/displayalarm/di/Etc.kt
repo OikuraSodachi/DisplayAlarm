@@ -4,6 +4,7 @@ import android.media.AudioDeviceInfo.TYPE_BUILTIN_SPEAKER
 import android.media.AudioManager
 import android.media.AudioManager.GET_DEVICES_OUTPUTS
 import android.media.MediaPlayer
+import com.todokanai.displayalarm.TestModel
 import com.todokanai.displayalarm.TimeChecker
 import com.todokanai.displayalarm.repository.DataStoreRepository
 import dagger.Module
@@ -34,5 +35,11 @@ class Etc {
             dataStoreRepository.endHourFlow,
             dataStoreRepository.endMinFlow
         )
+    }
+
+    @Singleton
+    @Provides
+    fun provideTestModel():TestModel{
+        return TestModel()
     }
 }

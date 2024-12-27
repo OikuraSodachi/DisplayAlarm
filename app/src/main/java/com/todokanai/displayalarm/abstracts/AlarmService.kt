@@ -24,7 +24,7 @@ abstract class AlarmService: BaseForegroundService() {
                 return true
             }
             else -> {
-                println("exception")
+                println("exception: state = ${defaultDisplay.state}")
                 return false
             }
         }
@@ -34,7 +34,6 @@ abstract class AlarmService: BaseForegroundService() {
     fun onCheckDisplayState(){
         isDisplayOn.value = getDisplayState()
     }
-
 
     override fun onCreate() {
         super.onCreate()
@@ -49,6 +48,4 @@ abstract class AlarmService: BaseForegroundService() {
     abstract suspend fun onStartAlarm(isDisplayOn:Boolean)
 
     abstract val shouldStartAlarm:Flow<Boolean>
-
-
 }
