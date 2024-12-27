@@ -7,7 +7,8 @@ import android.os.IBinder
 import androidx.core.app.NotificationManagerCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlin.coroutines.CoroutineContext
 
 /** Foreground Service with single Notification Channel ([android.app.NotificationChannel]) **/
 abstract class BaseForegroundService: Service() {
@@ -15,10 +16,12 @@ abstract class BaseForegroundService: Service() {
     private val binder = Binder()
     val notificationManager by lazy{ NotificationManagerCompat.from(this)}
 
-    private val serviceJob = Job()
+    open val serviceContext:CoroutineContext = Dispatchers.Default
 
+    private val _serviceContext
+        get() = serviceContext
     /** [BaseForegroundService]가 존재하는 동안 유지되는 CoroutineScope **/
-    val serviceScope = CoroutineScope(Dispatchers.Default + serviceJob)
+    val serviceScope = CoroutineScope(_serviceContext)
 
     override fun onBind(intent: Intent): IBinder {
         return binder
@@ -36,7 +39,7 @@ abstract class BaseForegroundService: Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        serviceJob.cancel()
+        serviceContext.cancel()
     }
 
     abstract fun onPostNotification()

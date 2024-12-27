@@ -111,4 +111,8 @@ class MainViewModel @Inject constructor(private val dataStore:DataStoreRepositor
     fun fileNameConverter(uri:Uri):String?{
         return uri.path
     }
+
+    fun testBtn(context: Context){
+      //  context.sendBroadcast(Intent.)
+    }
 }

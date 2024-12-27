@@ -42,6 +42,10 @@ class MainActivity : AppCompatActivity() {
                 openFilePicker()
             }
 
+            testBtn.setOnClickListener {
+                viewModel.testBtn(this@MainActivity)
+            }
+
             viewModel.run {
                 startHourFlow.asLiveData().observe(this@MainActivity) {
                     it?.let { t ->
