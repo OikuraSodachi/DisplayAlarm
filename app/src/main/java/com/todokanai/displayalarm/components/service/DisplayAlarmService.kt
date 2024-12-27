@@ -1,6 +1,8 @@
 package com.todokanai.displayalarm.components.service
 
-import com.todokanai.displayalarm.AlarmModel
+import android.media.MediaPlayer
+import android.view.Display
+import com.todokanai.displayalarm.TimeChecker
 import com.todokanai.displayalarm.abstracts.AlarmService
 import com.todokanai.displayalarm.notifications.Notifications
 import com.todokanai.displayalarm.objects.Constants.CHANNEL_ID
@@ -20,10 +22,16 @@ class DisplayAlarmService() : AlarmService() {
     //알림 권한 요청 추가할것
 
     @Inject
-    lateinit var alarmModel:AlarmModel
+    lateinit var dsRepo:DataStoreRepository
 
     @Inject
-    lateinit var dsRepo:DataStoreRepository
+    override lateinit var defaultDisplay:Display
+
+    @Inject
+    lateinit var timeChecker: TimeChecker
+
+    @Inject
+    lateinit var mediaPlayer: MediaPlayer
 
     private val notifications by lazy {
         Notifications(
@@ -33,10 +41,11 @@ class DisplayAlarmService() : AlarmService() {
         )
     }
 
+
     override val shouldStartAlarm: Flow<Boolean>
         get() = combine(
-            alarmModel.isInTime,
-            alarmModel.isDisplayOn
+            timeChecker.isInTime,
+            isDisplayOn
         ){ inTime,displayOn ->
             return@combine inTime&&displayOn
         }
@@ -44,19 +53,19 @@ class DisplayAlarmService() : AlarmService() {
 
     override fun onCreate() {
         super.onCreate()
-        alarmModel.run {
+      //  alarmModel.run {
             CoroutineScope(Dispatchers.Default).launch {
                 while(true){
                     onCheckDisplayState()
                     delay(1000)
                 }
             }
-        }
+        //}
     }
 
     override suspend fun onStartAlarm(isDisplayOn: Boolean) {
         val uri = dsRepo.getFileUri()
-        alarmModel.mediaPlayer.run {
+        mediaPlayer.run {
             if (isDisplayOn) {
                 if (uri == null) {
                     println("DisplayAlarmService: file uri is null")
