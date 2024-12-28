@@ -5,7 +5,6 @@ import com.todokanai.displayalarm.objects.Constants.MIN_MILLI
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import java.util.Calendar
-import java.util.Date
 import javax.inject.Inject
 
 class TimeChecker @Inject constructor(
@@ -16,25 +15,27 @@ class TimeChecker @Inject constructor(
 ) {
     private val calendarInstance = Calendar.getInstance()
 
-    private val startTime : Flow<Long> = combine(
+    private val startTime = combine(
         startHourFlow,
         startMinFlow
-    ){ hour, min ->
-        (hour ?:0) * HOUR_MILLI + (min ?:0)* MIN_MILLI
+    ){ hour,min ->
+        convertToMilli(hour,min)
     }
 
-    private val endTime : Flow<Long> = combine(
+    private val endTime = combine(
         endHourFlow,
         endMinFlow
-    ){ hour, min ->
-        (hour ?:0) * HOUR_MILLI + (min ?:0)* MIN_MILLI
+    ){ hour,min ->
+        convertToMilli(hour,min)
     }
 
     val isInTime : Flow<Boolean> = combine(
         startTime,
         endTime
     ){ start,end ->
-        val time = calendarInstance.time.toTimeMilli()
+        val temp = calendarInstance.time
+        val time = convertToMilli(temp.hours,temp.minutes)
+
         if(start<=time && time<=end){
             true
         }else{
@@ -42,8 +43,8 @@ class TimeChecker @Inject constructor(
         }
     }
 
-    /** hour : minute 값을 millisecond 으로 변환**/
-    private fun Date.toTimeMilli():Long{
-        return (this.hours*HOUR_MILLI + this.minutes*MIN_MILLI)
+    /** hour : minute 값을 millisecond 단위로 변환 **/
+    private fun convertToMilli(hour:Int?, minute:Int?):Long{
+        return (hour ?:0)* HOUR_MILLI + (minute ?:0)* MIN_MILLI
     }
 }

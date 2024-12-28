@@ -16,7 +16,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -64,7 +63,6 @@ class DisplayAlarmService : AlarmService() {
         CoroutineScope(Dispatchers.Default).launch {
             while(true){
                 onCheckDisplayState()
-                println("active: ${serviceScope.isActive}")
                 delay(1000)
             }
         }
