@@ -76,7 +76,7 @@ class DisplayAlarmService : AlarmService() {
                 if (uri == null) {
                     println("DisplayAlarmService: file uri is null")
                 } else {
-                    reset()
+                    reset()     //  attachNewPlayer called in state 16 이슈 해결
                     setDataSource(this@DisplayAlarmService, uri)
                     prepare()
                     start()
