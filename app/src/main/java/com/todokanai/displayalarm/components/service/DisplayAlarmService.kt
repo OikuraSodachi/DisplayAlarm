@@ -46,6 +46,7 @@ class DisplayAlarmService : AlarmService() {
             service = this,
             serviceChannel = serviceChannel,
             channelID = CHANNEL_ID,
+            notificationManager = notificationManager
         )
     }
 
@@ -75,6 +76,7 @@ class DisplayAlarmService : AlarmService() {
                 if (uri == null) {
                     println("DisplayAlarmService: file uri is null")
                 } else {
+                    reset()
                     setDataSource(this@DisplayAlarmService, uri)
                     prepare()
                     start()
