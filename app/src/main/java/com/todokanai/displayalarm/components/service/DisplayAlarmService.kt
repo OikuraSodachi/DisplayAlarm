@@ -5,16 +5,10 @@ import com.todokanai.displayalarm.DisplayAlarmServiceModel
 import com.todokanai.displayalarm.abstracts.AlarmService
 import com.todokanai.displayalarm.notifications.Notifications
 import com.todokanai.displayalarm.objects.Constants.CHANNEL_ID
+import com.todokanai.displayalarm.objects.Constants.HOUR_MILLI
+import com.todokanai.displayalarm.objects.Constants.MIN_MILLI
 import com.todokanai.displayalarm.objects.MyObjects.serviceChannel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.shareIn
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -38,26 +32,9 @@ class DisplayAlarmService : AlarmService() {
 
     private val mediaPlayer by lazy{model.mediaPlayer}
 
-    override val shouldStartAlarm: Flow<Boolean>
-        get() = combine(
-            model.timeChecker.isInTime,
-            isDisplayOn
-        ){ inTime,displayOn ->
-            return@combine inTime&&displayOn
-        }.shareIn(
-            serviceScope,
-            SharingStarted.Eagerly
-        )
-
     override fun onCreate() {
         super.onCreate()
-        model.testModel.init(serviceScope)        // 나중에 제거할 것
-        CoroutineScope(Dispatchers.Default).launch {
-            while(true){
-                onCheckDisplayState()
-                delay(1000)
-            }
-        }
+       // model.testModel.init(serviceScope)        // 나중에 제거할 것
     }
 
     override suspend fun onStartAlarm() {
@@ -84,5 +61,17 @@ class DisplayAlarmService : AlarmService() {
 
     override fun onCreateNotificationChannel() {
         notifications.createChannel(this)
+    }
+
+    override suspend fun getStartTime(): Long {
+        return convertToMilli(model.dsRepo.getStartHour(),model.dsRepo.getStartMin())
+    }
+    override suspend fun getEndTime(): Long {
+        return convertToMilli(model.dsRepo.getEndHour(),model.dsRepo.getEndMin())
+    }
+
+    /** hour : minute 값을 millisecond 단위로 변환 **/
+    private fun convertToMilli(hour:Int?, minute:Int?):Long{
+        return (hour ?:0)* HOUR_MILLI + (minute ?:0)* MIN_MILLI
     }
 }
