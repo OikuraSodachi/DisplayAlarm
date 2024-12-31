@@ -7,9 +7,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
-import com.todokanai.displayalarm.TestModel
 import com.todokanai.displayalarm.objects.MyObjects.permissions
 import com.todokanai.displayalarm.repository.DataStoreRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +19,7 @@ import javax.inject.Inject
 import kotlin.system.exitProcess
 
 @HiltViewModel
-class MainViewModel @Inject constructor(private val dataStore:DataStoreRepository,val testModel: TestModel):ViewModel() {
+class MainViewModel @Inject constructor(private val dataStore:DataStoreRepository):ViewModel() {
 
     val startHour = (0..23).toMutableList()
     val startMin = (0..59).toMutableList()
@@ -33,9 +31,9 @@ class MainViewModel @Inject constructor(private val dataStore:DataStoreRepositor
     val endHourFlow = dataStore.endHourFlow
     val endMinFlow = dataStore.endMinFlow
 
-    val fileName = dataStore.fileUriStringFlow.map{
-        it?.let { t->
-            fileNameConverter(t.toUri())
+    val fileName = dataStore.fileUriFlow.map{
+        it?.let{
+            fileNameConverter(it)
         }
     }
 
@@ -104,7 +102,7 @@ class MainViewModel @Inject constructor(private val dataStore:DataStoreRepositor
 
     fun saveUriString(uri: Uri){
         CoroutineScope(Dispatchers.IO).launch {
-            dataStore.saveFileUriString(uri.toString())
+            dataStore.saveFileUri(uri)
         }
     }
 
@@ -114,6 +112,5 @@ class MainViewModel @Inject constructor(private val dataStore:DataStoreRepositor
     }
 
     fun testBtn(context: Context){
-        testModel.test()
     }
 }

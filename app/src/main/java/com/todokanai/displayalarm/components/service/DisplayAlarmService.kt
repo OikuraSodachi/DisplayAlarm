@@ -5,8 +5,6 @@ import com.todokanai.displayalarm.DisplayAlarmServiceModel
 import com.todokanai.displayalarm.abstracts.AlarmService
 import com.todokanai.displayalarm.notifications.Notifications
 import com.todokanai.displayalarm.objects.Constants.CHANNEL_ID
-import com.todokanai.displayalarm.objects.Constants.HOUR_MILLI
-import com.todokanai.displayalarm.objects.Constants.MIN_MILLI
 import com.todokanai.displayalarm.objects.MyObjects.serviceChannel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -30,6 +28,7 @@ class DisplayAlarmService : AlarmService() {
         )
     }
 
+    private val dsRepo by lazy{model.dsRepo}
     private val mediaPlayer by lazy{model.mediaPlayer}
 
     override fun onCreate() {
@@ -38,7 +37,7 @@ class DisplayAlarmService : AlarmService() {
     }
 
     override suspend fun onStartAlarm() {
-        val uri = model.dsRepo.getFileUri()
+        val uri = dsRepo.getFileUri()
         mediaPlayer.run{
             if (uri == null) {
                 println("DisplayAlarmService: file uri is null")
@@ -64,14 +63,13 @@ class DisplayAlarmService : AlarmService() {
     }
 
     override suspend fun getStartTime(): Long {
-        return convertToMilli(model.dsRepo.getStartHour(),model.dsRepo.getStartMin())
+        return model.getStartTime()
     }
     override suspend fun getEndTime(): Long {
-        return convertToMilli(model.dsRepo.getEndHour(),model.dsRepo.getEndMin())
+        return model.getEndTime()
     }
 
-    /** hour : minute 값을 millisecond 단위로 변환 **/
-    private fun convertToMilli(hour:Int?, minute:Int?):Long{
-        return (hour ?:0)* HOUR_MILLI + (minute ?:0)* MIN_MILLI
+    override fun getCurrentTime(): Long {
+        return model.getCurrentTime()
     }
 }

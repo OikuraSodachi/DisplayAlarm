@@ -1,10 +1,12 @@
 package com.todokanai.displayalarm.repository
 
 import android.content.Context
+import android.net.Uri
 import androidx.core.net.toUri
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.todokanai.displayalarm.abstracts.MyDataStore
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -27,9 +29,11 @@ class DataStoreRepository @Inject constructor(appContext: Context): MyDataStore(
     suspend fun getFilePath() = DATASTORE_FILE_PATH.value()
     val filePath = DATASTORE_FILE_PATH.flow()
 
-    suspend fun saveFileUriString(value:String) = DATASTORE_FILE_URI_STRING.save(value)
+    suspend fun saveFileUri(value: Uri) = DATASTORE_FILE_URI_STRING.save(value.toString())
     suspend fun getFileUri() = DATASTORE_FILE_URI_STRING.value()?.toUri()
-    val fileUriStringFlow = DATASTORE_FILE_URI_STRING.flow()
+    val fileUriFlow = DATASTORE_FILE_URI_STRING.flow().map{
+        it?.toUri()
+    }
 
     suspend fun saveStartHour(value:Int) = DATASTORE_START_HOUR.save(value)
     suspend fun getStartHour() = DATASTORE_START_HOUR.value()

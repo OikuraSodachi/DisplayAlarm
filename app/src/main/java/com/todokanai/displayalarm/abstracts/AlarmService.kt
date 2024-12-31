@@ -1,8 +1,6 @@
 package com.todokanai.displayalarm.abstracts
 
 import android.view.Display
-import com.todokanai.displayalarm.objects.Constants.HOUR_MILLI
-import com.todokanai.displayalarm.objects.Constants.MIN_MILLI
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -12,23 +10,18 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
-import java.util.Calendar
 
 abstract class AlarmService: BaseForegroundService() {
 
     abstract val defaultDisplay: Display
 
     /** display 상태 instance **/
-    val isDisplayOn = MutableStateFlow(false)
-    val isInTime = MutableStateFlow(false)
+    private val isDisplayOn = MutableStateFlow(false)
+    private val isInTime = MutableStateFlow(false)
 
     /** [isInTime] 업데이트 **/
-    private suspend fun updateTime(){
-        val startTime = getStartTime()
-        val endTime = getEndTime()
-        val temp = Calendar.getInstance().time
-        val time = convertToMilli(temp.hours,temp.minutes)
-        if(startTime<=time && time<=endTime){
+    private fun updateTime(startTime:Long,endTime:Long,currentTime:Long){
+        if(startTime<=currentTime && currentTime<=endTime){
             isInTime.value = true
         }else{
             isInTime.value = false
@@ -36,7 +29,7 @@ abstract class AlarmService: BaseForegroundService() {
     }
 
     /** [isDisplayOn]에 display state 값 반영 **/
-    private fun onCheckDisplayState(){
+    private fun updateDisplayState(){
         when (defaultDisplay.state) {
             1 -> {
                 isDisplayOn.value = false
@@ -65,8 +58,8 @@ abstract class AlarmService: BaseForegroundService() {
         )
         CoroutineScope(Dispatchers.Default).launch {
             while(true){
-                onCheckDisplayState()
-                updateTime()
+                updateDisplayState()
+                updateTime(getStartTime(),getEndTime(),getCurrentTime())
                 delay(1000)
             }
         }
@@ -77,18 +70,14 @@ abstract class AlarmService: BaseForegroundService() {
 
     abstract suspend fun getStartTime():Long
     abstract suspend fun getEndTime():Long
+    abstract fun getCurrentTime():Long
 
-    val shouldStartAlarm by lazy {
+    private val shouldStartAlarm by lazy {
         combine(
             isInTime,
             isDisplayOn
         ) { inTime, displayOn ->
             return@combine inTime && displayOn
         }
-    }
-
-    /** hour : minute 값을 millisecond 단위로 변환 **/
-    private fun convertToMilli(hour:Int?, minute:Int?):Long{
-        return (hour ?:0)* HOUR_MILLI + (minute ?:0)* MIN_MILLI
     }
 }
