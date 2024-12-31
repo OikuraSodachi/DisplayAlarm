@@ -28,7 +28,6 @@ class DisplayAlarmService : AlarmService() {
         )
     }
 
-    private val dsRepo by lazy{model.dsRepo}
     private val mediaPlayer by lazy{model.mediaPlayer}
 
     override fun onCreate() {
@@ -37,7 +36,7 @@ class DisplayAlarmService : AlarmService() {
     }
 
     override suspend fun onStartAlarm() {
-        val uri = dsRepo.getFileUri()
+        val uri = model.dsRepo.getFileUri()
         mediaPlayer.run{
             if (uri == null) {
                 println("DisplayAlarmService: file uri is null")
