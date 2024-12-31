@@ -38,14 +38,19 @@ abstract class AlarmService: BaseForegroundService() {
     override fun onCreate() {
         super.onCreate()
         shouldStartAlarm.map{
-            onStartAlarm(it)
+            if(it){
+                onStartAlarm()
+            }else{
+                onStopAlarm()
+            }
         }.shareIn(
             scope = serviceScope,
             started = SharingStarted.Eagerly
         )
     }
 
-    abstract suspend fun onStartAlarm(isDisplayOn:Boolean)
+    abstract suspend fun onStartAlarm()
+    abstract suspend fun onStopAlarm()
 
     abstract val shouldStartAlarm:Flow<Boolean>
 }

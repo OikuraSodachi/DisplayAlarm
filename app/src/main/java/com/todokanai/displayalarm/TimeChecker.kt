@@ -35,6 +35,9 @@ class TimeChecker @Inject constructor(
     ){ start,end ->
         val temp = calendarInstance.time
         val time = convertToMilli(temp.hours,temp.minutes)
+        println("start: $start")
+        println("end: $end")
+        println("time: $time")
 
         if(start<=time && time<=end){
             true
