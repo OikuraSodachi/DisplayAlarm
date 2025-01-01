@@ -6,6 +6,9 @@ import androidx.core.net.toUri
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.todokanai.displayalarm.abstracts.MyDataStore
+import com.todokanai.displayalarm.objects.Constants.HOUR_MILLI
+import com.todokanai.displayalarm.objects.Constants.MIN_MILLI
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -50,4 +53,29 @@ class DataStoreRepository @Inject constructor(appContext: Context): MyDataStore(
     suspend fun saveEndMin(value:Int) = DATASTORE_END_MIN.save(value)
     suspend fun getEndMin() = DATASTORE_END_MIN.value()
     val endMinFlow = DATASTORE_END_MIN.flow()
+
+    /** hour : minute 값을 millisecond 단위로 변환 **/
+    private fun convertToMilli(hour:Int?, minute:Int?):Long{
+        return (hour ?:0)* HOUR_MILLI + (minute ?:0)* MIN_MILLI
+    }
+
+    suspend fun getStartTime():Long{
+        return convertToMilli(getStartHour(),getStartMin())
+    }
+    val startTimeFlow = combine(
+        startHourFlow,
+        startMinFlow
+    ){ hour,min ->
+        convertToMilli(hour,min)
+    }
+
+    suspend fun getEndTime():Long{
+        return convertToMilli(getEndHour(),getEndMin())
+    }
+    val endTimeFlow = combine(
+        endHourFlow,
+        endMinFlow
+    ){ hour,min ->
+        convertToMilli(hour,min)
+    }
 }
