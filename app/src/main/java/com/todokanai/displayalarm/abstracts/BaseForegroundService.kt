@@ -1,10 +1,16 @@
 package com.todokanai.displayalarm.abstracts
 
+import android.app.Notification
+import android.app.NotificationChannel
 import android.app.Service
+import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.os.Binder
+import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.app.ServiceCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -15,6 +21,7 @@ abstract class BaseForegroundService: Service() {
 
     private val binder = Binder()
     val notificationManager by lazy{ NotificationManagerCompat.from(this)}
+    abstract val notificationChannel:NotificationChannel
 
     open val serviceContext:CoroutineContext = Dispatchers.Default
 
@@ -42,6 +49,21 @@ abstract class BaseForegroundService: Service() {
         serviceScope.cancel()
     }
 
-    abstract fun onPostNotification()
-    abstract fun onCreateNotificationChannel()
+    abstract fun generateNotification(context:Context):Notification
+
+    open fun onPostNotification(notificationManager:NotificationManagerCompat = this@BaseForegroundService.notificationManager){
+        notificationManager.notify(1,generateNotification(this@BaseForegroundService))
+    }
+
+    open fun onCreateNotificationChannel(notificationManager:NotificationManagerCompat = this@BaseForegroundService.notificationManager){
+        notificationManager.createNotificationChannel(notificationChannel)
+        val notification = generateNotification(this@BaseForegroundService)
+        val type =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_MANIFEST
+            } else {
+                0
+            }
+        ServiceCompat.startForeground(this@BaseForegroundService, 1, notification, type)
+    }
 }

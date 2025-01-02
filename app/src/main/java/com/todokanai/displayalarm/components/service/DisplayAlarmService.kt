@@ -1,10 +1,13 @@
 package com.todokanai.displayalarm.components.service
 
+import android.app.Notification
+import android.app.NotificationChannel
+import android.content.Context
 import android.hardware.display.DisplayManager
 import android.media.MediaPlayer
+import androidx.core.app.NotificationCompat
+import com.todokanai.displayalarm.R
 import com.todokanai.displayalarm.abstracts.AlarmService
-import com.todokanai.displayalarm.notifications.Notifications
-import com.todokanai.displayalarm.objects.Constants.CHANNEL_ID
 import com.todokanai.displayalarm.objects.MyObjects.serviceChannel
 import com.todokanai.displayalarm.repository.DataStoreRepository
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,15 +26,6 @@ class DisplayAlarmService : AlarmService() {
 
     @Inject
     override lateinit var displayManager: DisplayManager
-
-    private val notifications by lazy {
-        Notifications(
-            service = this,
-            serviceChannel = serviceChannel,
-            channelID = CHANNEL_ID,
-            notificationManager = notificationManager
-        )
-    }
 
     override fun onCreate() {
         super.onCreate()
@@ -56,13 +50,18 @@ class DisplayAlarmService : AlarmService() {
         mediaPlayer.reset()
     }
 
-    override fun onPostNotification() {
-        notifications.postNotification(this)
+    override fun generateNotification(context: Context): Notification {
+        return NotificationCompat.Builder(context, notificationChannel.id)       // 알림바에 띄울 알림을 만듬
+            .setContentTitle(context.getString(R.string.notification_title)) // 알림의 제목
+            .setSmallIcon(R.mipmap.ic_launcher_round)
+            .setContentText(context.getString(R.string.notification_content_text))
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setOngoing(true)
+            .build()
     }
 
-    override fun onCreateNotificationChannel() {
-        notifications.createChannel(this)
-    }
+    override val notificationChannel: NotificationChannel
+        get() = serviceChannel
 
     override val startTimeFlow: Flow<Long>
         get() = dsRepo.startTimeFlow

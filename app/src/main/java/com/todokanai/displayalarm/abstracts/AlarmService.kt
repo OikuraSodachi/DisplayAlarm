@@ -11,11 +11,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
 abstract class AlarmService: BaseForegroundService() {
+
+    /** [updatePeriodically] 호출 간격 **/
+    open val updatePeriod = 1000L
 
     override fun onCreate() {
         super.onCreate()
@@ -25,15 +28,15 @@ abstract class AlarmService: BaseForegroundService() {
             }else{
                 onStopAlarm()
             }
-        }.shareIn(
+        }.stateIn(
             scope = serviceScope,
-            started = SharingStarted.Eagerly
+            started = SharingStarted.Eagerly,
+            initialValue = false
         )
         CoroutineScope(Dispatchers.Default).launch {
             while(true){
-                updateDisplayState()
-                currentTimeFlow.value = getCurrentTime()      // currentTimeFlow 업데이트
-                delay(1000)
+                updatePeriodically()
+                delay(updatePeriod)
             }
         }
     }
@@ -92,7 +95,14 @@ abstract class AlarmService: BaseForegroundService() {
             isInTime,
             isDisplayOn
         ) { inTime, displayOn ->
+            println("isDisplayOn: $displayOn, shouldStartAlarm: ${inTime&&displayOn}")
             return@combine inTime && displayOn
         }
+    }
+
+    /** update values every second **/
+    open suspend fun updatePeriodically(){
+        updateDisplayState()
+        currentTimeFlow.value = getCurrentTime()      // currentTimeFlow 업데이트
     }
 }

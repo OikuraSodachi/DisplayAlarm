@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.run {
             startHour.run {
-                val tempAdapter = ArrayAdapter(this@MainActivity, spinner_R, viewModel.startHour)
+                val tempAdapter = ArrayAdapter(this@MainActivity, spinner_R, viewModel.startHourList)
                 adapter = tempAdapter
                 onItemSelectedListener = SpinnerListener({ position ->
                     tempAdapter.getItem(position)?.let {
@@ -100,7 +100,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             startMin.run {
-                val tempAdapter = ArrayAdapter(this@MainActivity, spinner_R, viewModel.startMin)
+                val tempAdapter = ArrayAdapter(this@MainActivity, spinner_R, viewModel.startMinList)
                 adapter = tempAdapter
                 onItemSelectedListener = SpinnerListener({ position ->
                     tempAdapter.getItem(position)?.let {
@@ -110,7 +110,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             endHour.run {
-                val tempAdapter = ArrayAdapter(this@MainActivity, spinner_R, viewModel.endHour)
+                val tempAdapter = ArrayAdapter(this@MainActivity, spinner_R, viewModel.endHourList)
                 adapter = tempAdapter
                 onItemSelectedListener = SpinnerListener({ position ->
                     tempAdapter.getItem(position)?.let {
@@ -120,7 +120,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             endMin.run {
-                val tempAdapter = ArrayAdapter(this@MainActivity, spinner_R, viewModel.endMin)
+                val tempAdapter = ArrayAdapter(this@MainActivity, spinner_R, viewModel.endMinList)
                 adapter = tempAdapter
                 onItemSelectedListener = SpinnerListener({ position ->
                     tempAdapter.getItem(position)?.let {
@@ -135,10 +135,10 @@ class MainActivity : AppCompatActivity() {
     fun spinnerCase2(saveButton: View){
         val spinner_R = android.R.layout.simple_spinner_dropdown_item
         binding.run {
-            startHour.adapter = ArrayAdapter(this@MainActivity, spinner_R, viewModel.startHour)
-            startMin.adapter = ArrayAdapter(this@MainActivity, spinner_R, viewModel.startMin)
-            endHour.adapter = ArrayAdapter(this@MainActivity, spinner_R, viewModel.endHour)
-            endMin.adapter = ArrayAdapter(this@MainActivity, spinner_R, viewModel.endMin)
+            startHour.adapter = ArrayAdapter(this@MainActivity, spinner_R, viewModel.startHourList)
+            startMin.adapter = ArrayAdapter(this@MainActivity, spinner_R, viewModel.startMinList)
+            endHour.adapter = ArrayAdapter(this@MainActivity, spinner_R, viewModel.endHourList)
+            endMin.adapter = ArrayAdapter(this@MainActivity, spinner_R, viewModel.endMinList)
 
             saveButton.setOnClickListener {
                 viewModel.saveTime(

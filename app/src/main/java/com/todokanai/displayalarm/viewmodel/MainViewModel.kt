@@ -3,7 +3,6 @@ package com.todokanai.displayalarm.viewmodel
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -21,20 +20,21 @@ import kotlin.system.exitProcess
 @HiltViewModel
 class MainViewModel @Inject constructor(private val dataStore:DataStoreRepository):ViewModel() {
 
-    val startHour = (0..23).toMutableList()
-    val startMin = (0..59).toMutableList()
-    val endHour = (0..23).toMutableList()
-    val endMin = (0..59).toMutableList()
+    val startHourList = (0..23).toMutableList()
+    val startMinList = (0..59).toMutableList()
+    val endHourList = (0..23).toMutableList()
+    val endMinList = (0..59).toMutableList()
 
     val startHourFlow = dataStore.startHourFlow
     val startMinFlow = dataStore.startMinFlow
     val endHourFlow = dataStore.endHourFlow
     val endMinFlow = dataStore.endMinFlow
 
+    /** uri에서 File 이름 추출
+     *
+     * 현재 비정상 작동중 **/
     val fileName = dataStore.fileUriFlow.map{
-        it?.let{
-            fileNameConverter(it)
-        }
+        it?.path
     }
 
     fun setStartHour(value:Int){
@@ -65,10 +65,12 @@ class MainViewModel @Inject constructor(private val dataStore:DataStoreRepositor
         exitProcess(0)
     }
 
+    /*
     fun isPermissionGranted(activity: Activity):Boolean{
         val permission = permissions.first()
         return ContextCompat.checkSelfPermission(activity,permission) == PackageManager.PERMISSION_GRANTED
     }
+     */
 
     fun requestPermission(activity: Activity, requestCode:Int = 1111){
         ActivityCompat.requestPermissions(
