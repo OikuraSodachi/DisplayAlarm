@@ -23,12 +23,12 @@ abstract class BaseForegroundService: Service() {
     val notificationManager by lazy{ NotificationManagerCompat.from(this)}
     abstract val notificationChannel:NotificationChannel
 
-    open val serviceContext:CoroutineContext = Dispatchers.Default
+    open val serviceCoroutineContext:CoroutineContext = Dispatchers.Default
 
-    private val _serviceContext
-        get() = serviceContext
+    private val _serviceCoroutineContext
+        get() = serviceCoroutineContext
     /** [BaseForegroundService]가 존재하는 동안 유지되는 CoroutineScope **/
-    val serviceScope = CoroutineScope(_serviceContext)
+    val serviceScope = CoroutineScope(_serviceCoroutineContext)
 
     override fun onBind(intent: Intent): IBinder {
         return binder
