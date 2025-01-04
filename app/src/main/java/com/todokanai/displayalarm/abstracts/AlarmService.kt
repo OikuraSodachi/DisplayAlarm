@@ -1,6 +1,7 @@
 package com.todokanai.displayalarm.abstracts
 
 import android.hardware.display.DisplayManager
+import android.view.Display
 import com.todokanai.displayalarm.objects.Constants.HOUR_MILLI
 import com.todokanai.displayalarm.objects.Constants.MIN_MILLI
 import kotlinx.coroutines.CoroutineScope
@@ -16,6 +17,14 @@ import kotlinx.coroutines.launch
 import java.util.Calendar
 
 abstract class AlarmService: BaseForegroundService() {
+
+    /** display 상태 instance **/
+    private val isDisplayOn = MutableStateFlow(false)
+    private val currentTimeFlow = MutableStateFlow(-1L) // 값을 -1로 지정하여, shouldStartAlarm 초기 값 false 만듬
+
+    abstract val startTimeFlow: Flow<Long>
+    abstract val endTimeFlow: Flow<Long>
+    abstract val displayManager:DisplayManager
 
     /** [updatePeriodically] 호출 간격 **/
     open val updatePeriod = 1000L
@@ -35,34 +44,17 @@ abstract class AlarmService: BaseForegroundService() {
         )
         CoroutineScope(Dispatchers.Default).launch {
             while(true){
-                updatePeriodically()
+                updatePeriodically(displayManager.displays.first())
                 delay(updatePeriod)
             }
         }
     }
 
-    abstract val startTimeFlow: Flow<Long>
-    abstract val endTimeFlow: Flow<Long>
-    private val currentTimeFlow = MutableStateFlow(-1L) // 값을 -1로 지정하여, shouldStartAlarm 초기 값 false 만듬
-    abstract val displayManager:DisplayManager
+    abstract suspend fun onStartAlarm()
+    abstract suspend fun onStopAlarm()
 
-    /** display 상태 instance **/
-    private val isDisplayOn = MutableStateFlow(false)
-    private val isInTime by lazy {
-        combine(
-            startTimeFlow,
-            endTimeFlow,
-            currentTimeFlow
-        ) { start,end,current ->
-            return@combine start<=current && current<=end
-        }
-    }
-    private val defaultDisplay by lazy{
-        displayManager.displays.first()
-    }
-
-    /** [isDisplayOn]에 display state 값 반영 **/
-    private fun updateDisplayState(){
+    /** update values every second **/
+    open suspend fun updatePeriodically(defaultDisplay: Display){
         when (defaultDisplay.state) {
             1 -> {
                 isDisplayOn.value = false
@@ -71,14 +63,34 @@ abstract class AlarmService: BaseForegroundService() {
                 isDisplayOn.value = true
             }
             else -> {
-                println("exception: state = ${defaultDisplay.state}")
                 isDisplayOn.value = false
             }
-        }
+        }       // [isDisplayOn]에 display state 값 반영
+        currentTimeFlow.value = getCurrentTime()      // currentTimeFlow 업데이트
     }
 
-    abstract suspend fun onStartAlarm()
-    abstract suspend fun onStopAlarm()
+    private val isInTime by lazy {
+        combine(
+            startTimeFlow,
+            endTimeFlow,
+            currentTimeFlow
+        ) { start,end,current ->
+            return@combine start<=current && current<=end
+        }.stateIn(
+            serviceScope,
+            SharingStarted.WhileSubscribed(5),
+            false
+        )
+    }
+
+    private val shouldStartAlarm by lazy {
+        combine(
+            isInTime,
+            isDisplayOn
+        ) { inTime, displayOn ->
+            return@combine inTime && displayOn
+        }
+    }
 
     /** hour : minute 값을 millisecond 단위로 변환 **/
     private fun convertToMilli(hour:Int?, minute:Int?):Long{
@@ -88,21 +100,5 @@ abstract class AlarmService: BaseForegroundService() {
     private fun getCurrentTime():Long{
         val temp = Calendar.getInstance().time
         return convertToMilli(temp.hours,temp.minutes)
-    }
-
-    private val shouldStartAlarm by lazy {
-        combine(
-            isInTime,
-            isDisplayOn
-        ) { inTime, displayOn ->
-            println("isDisplayOn: $displayOn, shouldStartAlarm: ${inTime&&displayOn}")
-            return@combine inTime && displayOn
-        }
-    }
-
-    /** update values every second **/
-    open suspend fun updatePeriodically(){
-        updateDisplayState()
-        currentTimeFlow.value = getCurrentTime()      // currentTimeFlow 업데이트
     }
 }
