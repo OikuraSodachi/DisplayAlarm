@@ -1,6 +1,7 @@
 package com.todokanai.displayalarm.abstracts
 
 import android.hardware.display.DisplayManager
+import android.view.Display
 import com.todokanai.displayalarm.objects.Constants.HOUR_MILLI
 import com.todokanai.displayalarm.objects.Constants.MIN_MILLI
 import kotlinx.coroutines.flow.Flow
@@ -15,33 +16,25 @@ abstract class AlarmService: BaseAlarmService() {
     /** display 상태 instance **/
     private val isDisplayOn = MutableStateFlow(false)
     private val currentTimeFlow = MutableStateFlow(-1L) // 값을 -1로 지정하여, shouldStartAlarm 초기 값 false 만듬
-    private val defaultDisplay by lazy{displayManager.displays.first()}
 
     abstract val startTimeFlow: Flow<Long>
     abstract val endTimeFlow: Flow<Long>
     abstract val displayManager:DisplayManager
+    abstract val defaultDisplay: Display
 
-    private val isInTime by lazy {
+    override val shouldStartAlarm by lazy{
         combine(
             startTimeFlow,
             endTimeFlow,
-            currentTimeFlow
-        ) { start,end,current ->
-            return@combine start<=current && current<=end
-        }.stateIn(
-            serviceScope,
-            SharingStarted.WhileSubscribed(5),
-            false
-        )
-    }
-
-    override val shouldStartAlarm by lazy {
-        combine(
-            isInTime,
+            currentTimeFlow,
             isDisplayOn
-        ) { inTime, displayOn ->
-            return@combine inTime && displayOn
-        }
+        ){ start,end,current,display ->
+            return@combine isInTime(start, current, end) && display
+        }.stateIn(
+            scope = serviceScope,
+            started = SharingStarted.WhileSubscribed(5),
+            initialValue = false
+        )
     }
 
     /** update values every second **/
@@ -68,5 +61,10 @@ abstract class AlarmService: BaseAlarmService() {
     private fun getCurrentTime():Long{
         val temp = Calendar.getInstance().time
         return convertToMilli(temp.hours,temp.minutes)
+    }
+
+    /** 시간 조건 **/
+    private fun isInTime(start:Long,current:Long,end:Long):Boolean{
+        return start<=current && current<=end
     }
 }

@@ -5,6 +5,7 @@ import android.app.NotificationChannel
 import android.content.Context
 import android.hardware.display.DisplayManager
 import android.media.MediaPlayer
+import android.view.Display
 import androidx.core.app.NotificationCompat
 import com.todokanai.displayalarm.R
 import com.todokanai.displayalarm.abstracts.AlarmService
@@ -68,4 +69,7 @@ class DisplayAlarmService : AlarmService() {
 
     override val endTimeFlow: Flow<Long>
         get() = dsRepo.endTimeFlow
+
+    override val defaultDisplay: Display
+        get() = displayManager.displays.first()
 }

@@ -4,28 +4,26 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.launch
 
 abstract class BaseAlarmService:BaseForegroundService() {
 
     open val updatePeriod = 1000L
 
+    private val collector = FlowCollector<Boolean>{
+        if(it){
+            onStartAlarm()
+        }else{
+            onStopAlarm()
+        }
+    }
+
     override fun onCreate() {
         super.onCreate()
-        shouldStartAlarm.map{
-            if(it){
-                onStartAlarm()
-            }else{
-                onStopAlarm()
-            }
-        }.stateIn(
-            scope = serviceScope,
-            started = SharingStarted.Eagerly,
-            initialValue = false
-        )
+        serviceScope.launch{
+            shouldStartAlarm.collect(collector)
+        }
         CoroutineScope(Dispatchers.Default).launch {
             while(true){
                 update()
