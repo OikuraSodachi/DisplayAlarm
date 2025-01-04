@@ -1,73 +1,25 @@
 package com.todokanai.displayalarm.abstracts
 
 import android.hardware.display.DisplayManager
-import android.view.Display
 import com.todokanai.displayalarm.objects.Constants.HOUR_MILLI
 import com.todokanai.displayalarm.objects.Constants.MIN_MILLI
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import java.util.Calendar
 
-abstract class AlarmService: BaseForegroundService() {
+abstract class AlarmService: BaseAlarmService() {
 
     /** display 상태 instance **/
     private val isDisplayOn = MutableStateFlow(false)
     private val currentTimeFlow = MutableStateFlow(-1L) // 값을 -1로 지정하여, shouldStartAlarm 초기 값 false 만듬
+    private val defaultDisplay by lazy{displayManager.displays.first()}
 
     abstract val startTimeFlow: Flow<Long>
     abstract val endTimeFlow: Flow<Long>
     abstract val displayManager:DisplayManager
-
-    /** [updatePeriodically] 호출 간격 **/
-    open val updatePeriod = 1000L
-
-    override fun onCreate() {
-        super.onCreate()
-        shouldStartAlarm.map{
-            if(it){
-                onStartAlarm()
-            }else{
-                onStopAlarm()
-            }
-        }.stateIn(
-            scope = serviceScope,
-            started = SharingStarted.Eagerly,
-            initialValue = false
-        )
-        CoroutineScope(Dispatchers.Default).launch {
-            while(true){
-                updatePeriodically(displayManager.displays.first())
-                delay(updatePeriod)
-            }
-        }
-    }
-
-    abstract suspend fun onStartAlarm()
-    abstract suspend fun onStopAlarm()
-
-    /** update values every second **/
-    open suspend fun updatePeriodically(defaultDisplay: Display){
-        when (defaultDisplay.state) {
-            1 -> {
-                isDisplayOn.value = false
-            }
-            2 -> {
-                isDisplayOn.value = true
-            }
-            else -> {
-                isDisplayOn.value = false
-            }
-        }       // [isDisplayOn]에 display state 값 반영
-        currentTimeFlow.value = getCurrentTime()      // currentTimeFlow 업데이트
-    }
 
     private val isInTime by lazy {
         combine(
@@ -83,13 +35,29 @@ abstract class AlarmService: BaseForegroundService() {
         )
     }
 
-    private val shouldStartAlarm by lazy {
+    override val shouldStartAlarm by lazy {
         combine(
             isInTime,
             isDisplayOn
         ) { inTime, displayOn ->
             return@combine inTime && displayOn
         }
+    }
+
+    /** update values every second **/
+    override suspend fun update() {
+        when (defaultDisplay.state) {
+            1 -> {
+                isDisplayOn.value = false
+            }
+            2 -> {
+                isDisplayOn.value = true
+            }
+            else -> {
+                isDisplayOn.value = false
+            }
+        }       // [isDisplayOn]에 display state 값 반영
+        currentTimeFlow.value = getCurrentTime()      // currentTimeFlow 업데이트
     }
 
     /** hour : minute 값을 millisecond 단위로 변환 **/
