@@ -9,6 +9,7 @@ import android.view.Display
 import androidx.core.app.NotificationCompat
 import com.todokanai.displayalarm.R
 import com.todokanai.displayalarm.abstracts.AlarmService
+import com.todokanai.displayalarm.components.activity.MainActivity.Companion.mainIntent
 import com.todokanai.displayalarm.objects.MyObjects.serviceChannel
 import com.todokanai.displayalarm.repository.DataStoreRepository
 import dagger.hilt.android.AndroidEntryPoint
@@ -57,6 +58,7 @@ class DisplayAlarmService : AlarmService() {
             .setSmallIcon(R.mipmap.ic_launcher_round)
             .setContentText(context.getString(R.string.notification_content_text))
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setContentIntent(mainIntent)
             .setOngoing(true)
             .build()
     }

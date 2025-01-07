@@ -1,6 +1,7 @@
 package com.todokanai.displayalarm.components.activity
 
 import android.app.Activity
+import android.app.PendingIntent
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -11,6 +12,7 @@ import androidx.lifecycle.asLiveData
 import com.todokanai.displayalarm.adapters.SpinnerListener
 import com.todokanai.displayalarm.components.service.DisplayAlarmService
 import com.todokanai.displayalarm.databinding.ActivityMainBinding
+import com.todokanai.displayalarm.di.MyApplication.Companion.appContext
 import com.todokanai.displayalarm.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -21,6 +23,9 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val REQUEST_CODE_OPEN_DOCUMENT = 1
+        private val mainOpenIntent = Intent(appContext, MainActivity::class.java)
+        /** intent to open [MainActivity] **/
+        val mainIntent = PendingIntent.getActivity(appContext,0, Intent(mainOpenIntent), PendingIntent.FLAG_IMMUTABLE)
     }
 
     private val binding by lazy{ActivityMainBinding.inflate(layoutInflater)}
