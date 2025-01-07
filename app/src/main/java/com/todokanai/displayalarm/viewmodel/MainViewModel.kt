@@ -7,10 +7,10 @@ import android.net.Uri
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
+import com.todokanai.baseprojectmodule.independent.getPathFromUri_td
 import com.todokanai.displayalarm.di.MyApplication.Companion.appContext
 import com.todokanai.displayalarm.objects.MyObjects.permissions
 import com.todokanai.displayalarm.repository.DataStoreRepository
-import com.todokanai.displayalarm.tools.independent.getPathFromUri_td
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

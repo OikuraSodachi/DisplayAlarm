@@ -41,6 +41,7 @@ android {
 }
 
 dependencies {
+    implementation(files("C:\\Users\\bh951\\Desktop\\BaseProjectModule.aar"))
     val roomVersion = "2.6.1"
 
     implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
