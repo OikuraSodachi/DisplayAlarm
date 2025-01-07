@@ -5,7 +5,7 @@ import android.net.Uri
 import androidx.core.net.toUri
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.todokanai.displayalarm.abstracts.MyDataStore
+import com.todokanai.baseprojectmodule.abstracts.MyDataStore
 import com.todokanai.displayalarm.objects.Constants.HOUR_MILLI
 import com.todokanai.displayalarm.objects.Constants.MIN_MILLI
 import kotlinx.coroutines.flow.combine

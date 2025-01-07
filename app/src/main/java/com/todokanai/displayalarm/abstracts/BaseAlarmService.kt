@@ -1,5 +1,6 @@
 package com.todokanai.displayalarm.abstracts
 
+import com.todokanai.baseprojectmodule.abstracts.BaseForegroundService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -7,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.launch
 
-abstract class BaseAlarmService:BaseForegroundService() {
+abstract class BaseAlarmService: BaseForegroundService() {
 
     open val updatePeriod = 1000L
 
