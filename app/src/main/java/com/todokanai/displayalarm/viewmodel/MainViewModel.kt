@@ -7,13 +7,16 @@ import android.net.Uri
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
+import com.todokanai.displayalarm.di.MyApplication.Companion.appContext
 import com.todokanai.displayalarm.objects.MyObjects.permissions
 import com.todokanai.displayalarm.repository.DataStoreRepository
+import com.todokanai.displayalarm.tools.independent.getPathFromUri_td
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import okio.Path.Companion.toPath
 import javax.inject.Inject
 import kotlin.system.exitProcess
 
@@ -34,7 +37,9 @@ class MainViewModel @Inject constructor(private val dataStore:DataStoreRepositor
      *
      * 현재 비정상 작동중 **/
     val fileName = dataStore.fileUriFlow.map{
-        it?.path
+        it?.let { uri ->
+            fileNameConverter(appContext, uri)
+        }
     }
 
     fun setStartHour(value:Int){
@@ -109,8 +114,9 @@ class MainViewModel @Inject constructor(private val dataStore:DataStoreRepositor
     }
 
     /** uri에서 File 이름 추출 **/
-    fun fileNameConverter(uri:Uri):String?{
-        return uri.path
+    private fun fileNameConverter(context: Context,uri:Uri):String?{
+        val out= getPathFromUri_td(context,uri)?.toPath()
+        return out?.name
     }
 
     fun testBtn(context: Context){
