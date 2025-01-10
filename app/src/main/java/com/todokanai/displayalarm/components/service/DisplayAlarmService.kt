@@ -52,8 +52,8 @@ class DisplayAlarmService : AlarmService() {
         mediaPlayer.reset()
     }
 
-    override fun generateNotification(context: Context): Notification {
-        return NotificationCompat.Builder(context, notificationChannel.id)       // 알림바에 띄울 알림을 만듬
+    override fun foregroundNotification(context: Context,channelId:String): Notification {
+        return NotificationCompat.Builder(context, channelId)       // 알림바에 띄울 알림을 만듬
             .setContentTitle(context.getString(R.string.notification_title)) // 알림의 제목
             .setSmallIcon(R.mipmap.ic_launcher_round)
             .setContentText(context.getString(R.string.notification_content_text))

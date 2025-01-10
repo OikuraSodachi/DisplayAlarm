@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.todokanai.displayalarm"
-        minSdk = 28
+        minSdk = 30
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -41,7 +41,7 @@ android {
 }
 
 dependencies {
-    implementation(files("C:\\Users\\bh951\\Desktop\\BaseProjectModule.aar")) 
+    //implementation(files("C:\\Users\\bh951\\Desktop\\BaseProjectModule.aar"))
     val roomVersion = "2.6.1"
 
     implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
