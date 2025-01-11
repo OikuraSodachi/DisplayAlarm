@@ -75,7 +75,7 @@ class MainActivity : AppCompatActivity() {
             }       // Todo :이거 어떻게 단순화할수 없나?
 
            // spinnerCase1()      // spinner item 선택 즉시 반영 방식
-            spinnerCase2(binding.saveTimeBtn)   // 별도의 save 버튼으로 반영 방식
+            spinnerCase2(binding.saveTimeBtn,android.R.layout.simple_spinner_dropdown_item)   // 별도의 save 버튼으로 반영 방식
         }
         viewModel.fileName.asLiveData().observe(this){
             binding.soundFileName.text = it
@@ -90,9 +90,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /** spinner item 선택 즉시 반영 방식 **/
-    fun spinnerCase1(){
-        val spinner_R = android.R.layout.simple_spinner_dropdown_item
-
+    fun spinnerCase1(spinner_R: Int = android.R.layout.simple_spinner_dropdown_item){
         binding.run {
             startHour.run {
                 val tempAdapter = ArrayAdapter(this@MainActivity, spinner_R, viewModel.startHourList)
@@ -137,8 +135,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     /** 별도의 save 버튼으로 반영 방식 **/
-    fun spinnerCase2(saveButton: View){
-        val spinner_R = android.R.layout.simple_spinner_dropdown_item
+    fun spinnerCase2(
+        saveButton: View,
+        spinner_R:Int
+    ){
         binding.run {
             startHour.adapter = ArrayAdapter(this@MainActivity, spinner_R, viewModel.startHourList)
             startMin.adapter = ArrayAdapter(this@MainActivity, spinner_R, viewModel.startMinList)
