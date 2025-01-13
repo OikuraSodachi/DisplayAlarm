@@ -65,8 +65,9 @@ class DisplayAlarmService : AlarmService() {
             .build()
     }
 
-    override val notificationChannel: NotificationChannel
-        get() = serviceChannel
+    override fun onGetNotificationChannel(): NotificationChannel {
+        return serviceChannel
+    }
 
     override val startTimeFlow: Flow<Long>
         get() = dsRepo.startTimeFlow
