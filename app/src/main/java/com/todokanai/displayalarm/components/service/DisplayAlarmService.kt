@@ -65,7 +65,7 @@ class DisplayAlarmService : AlarmService() {
             .build()
     }
 
-    override fun onGetNotificationChannel(): NotificationChannel {
+    override fun getNotificationChannel(): NotificationChannel {
         return serviceChannel
     }
 

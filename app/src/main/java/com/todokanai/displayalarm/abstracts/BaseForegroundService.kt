@@ -20,9 +20,9 @@ import kotlin.coroutines.CoroutineContext
 abstract class BaseForegroundService: Service() {
 
     private val binder = Binder()
-    val notificationManager by lazy{ NotificationManagerCompat.from(this)}
+    private val notificationManager by lazy{NotificationManagerCompat.from(this)}
     private val serviceCoroutineContext: CoroutineContext = Dispatchers.Default
-    private val notificationChannel by lazy{onGetNotificationChannel()}
+    private val id : Int = 1
 
     /** [BaseForegroundService]가 존재하는 동안 유지되는 CoroutineScope
      *
@@ -36,11 +36,19 @@ abstract class BaseForegroundService: Service() {
 
     override fun onCreate() {
         super.onCreate()
-        onCreateNotificationChannel()
+        val type =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_MANIFEST
+            } else {
+                0
+            }
+
+        notificationManager.createNotificationChannel(getNotificationChannel())
+        ServiceCompat.startForeground(this, id, foregroundNotification(this), type)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        onPostNotification()
+        notificationManager.notify(id,foregroundNotification())
         return super.onStartCommand(intent, flags, startId)
     }
 
@@ -52,32 +60,9 @@ abstract class BaseForegroundService: Service() {
     /** notification for the foregroundservice **/
     abstract fun foregroundNotification(
         context: Context = this,
-        channelId:String = notificationChannel.id
+        channelId:String = getNotificationChannel().id
     ): Notification
 
-    open fun onPostNotification(
-        context: Context = this,
-        notificationManager:NotificationManagerCompat = this.notificationManager,
-        id:Int = 1
-    ){
-        notificationManager.notify(id,foregroundNotification(context))
-    }
 
-    open fun onCreateNotificationChannel(
-        service: Service = this,
-        notificationManager:NotificationManagerCompat = this.notificationManager,
-        id:Int = 1,
-        notification:Notification = foregroundNotification(this),
-        type:Int =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_MANIFEST
-            } else {
-                0
-            }
-    ){
-        notificationManager.createNotificationChannel(notificationChannel)
-        ServiceCompat.startForeground(service, id, notification, type)
-    }
-
-    abstract fun onGetNotificationChannel():NotificationChannel
+    abstract fun getNotificationChannel():NotificationChannel
 }
