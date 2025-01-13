@@ -33,6 +33,8 @@ class MainViewModel @Inject constructor(private val dataStore:DataStoreRepositor
     val endHourFlow = dataStore.endHourFlow
     val endMinFlow = dataStore.endMinFlow
 
+    val disableSoundFlow = dataStore.enableSoundFlow
+
     /** uri에서 File 이름 추출
      *
      * 현재 비정상 작동중 **/
@@ -117,6 +119,13 @@ class MainViewModel @Inject constructor(private val dataStore:DataStoreRepositor
     private fun fileNameConverter(context: Context,uri:Uri):String?{
         val out= getPathFromUri_td(context,uri)?.toPath()
         return out?.name
+    }
+
+    fun soundSwitch(value:Boolean){
+        println("enable sound save: $value")
+        CoroutineScope(Dispatchers.IO).launch {
+            dataStore.saveEnableSound(value)
+        }
     }
 
     fun testBtn(context: Context){

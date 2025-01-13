@@ -3,6 +3,7 @@ package com.todokanai.displayalarm.repository
 import android.content.Context
 import android.net.Uri
 import androidx.core.net.toUri
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.todokanai.displayalarm.abstracts.MyDataStore
@@ -23,6 +24,7 @@ class DataStoreRepository @Inject constructor(appContext: Context): MyDataStore(
         private val DATASTORE_START_MIN = intPreferencesKey("datastore_start_min")
         private val DATASTORE_END_HOUR = intPreferencesKey("datastore_end_hour")
         private val DATASTORE_END_MIN = intPreferencesKey("datastore_end_min")
+        private val DATASTORE_ENABLE_SOUND = booleanPreferencesKey("datastore_enable_sound")
     }
     suspend fun saveString(value:String) = DATASTORE_STRING.save(value)
     suspend fun getString() = DATASTORE_STRING.value()
@@ -78,4 +80,8 @@ class DataStoreRepository @Inject constructor(appContext: Context): MyDataStore(
     ){ hour,min ->
         convertToMilli(hour,min)
     }
+
+    suspend fun saveEnableSound(value:Boolean) = DATASTORE_ENABLE_SOUND.save(value)
+    suspend fun getEnableSound() = DATASTORE_ENABLE_SOUND.value()
+    val enableSoundFlow = DATASTORE_ENABLE_SOUND.flow()
 }

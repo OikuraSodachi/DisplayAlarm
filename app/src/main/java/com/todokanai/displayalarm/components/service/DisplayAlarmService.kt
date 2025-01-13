@@ -36,7 +36,9 @@ class DisplayAlarmService : AlarmService() {
 
     override suspend fun onStartAlarm() {
         val uri = dsRepo.getFileUri()
-        mediaPlayer.run{
+        val enableSound = dsRepo.getEnableSound() ?: false
+
+        mediaPlayer.run {
             if (uri == null) {
                 println("DisplayAlarmService: file uri is null")
             } else {

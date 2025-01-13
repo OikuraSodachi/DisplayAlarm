@@ -39,6 +39,15 @@ class MainActivity : AppCompatActivity() {
         viewModel.startService(this,serviceIntent)
 
         binding.run {
+            soundswitch.setOnCheckedChangeListener{ _, isChecked ->
+                if (isChecked) {
+                    // The switch is checked.
+                } else {
+                    // The switch isn't checked.
+                }
+                viewModel.soundSwitch(isChecked)
+            }
+
             exitBtn.setOnClickListener {
                 viewModel.exit(this@MainActivity,serviceIntent)
             }
@@ -72,6 +81,13 @@ class MainActivity : AppCompatActivity() {
                         binding.endMin.setSelection(t)
                     }
                 }
+
+                disableSoundFlow.asLiveData().observe(this@MainActivity){
+                    it?.let { t->
+                        binding.soundswitch.isChecked = t
+                    }
+                }
+
             }       // Todo :이거 어떻게 단순화할수 없나?
 
            // spinnerCase1()      // spinner item 선택 즉시 반영 방식
