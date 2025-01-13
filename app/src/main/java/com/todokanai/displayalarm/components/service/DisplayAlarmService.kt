@@ -10,10 +10,17 @@ import androidx.core.app.NotificationCompat
 import com.todokanai.displayalarm.R
 import com.todokanai.displayalarm.abstracts.AlarmService
 import com.todokanai.displayalarm.components.activity.MainActivity.Companion.mainIntent
+import com.todokanai.displayalarm.objects.Constants.HOUR_MILLI
+import com.todokanai.displayalarm.objects.Constants.MIN_MILLI
 import com.todokanai.displayalarm.objects.MyObjects.serviceChannel
 import com.todokanai.displayalarm.repository.DataStoreRepository
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
+import java.util.Calendar
+import java.util.Date
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -27,7 +34,7 @@ class DisplayAlarmService : AlarmService() {
     lateinit var dsRepo:DataStoreRepository
 
     @Inject
-    override lateinit var displayManager: DisplayManager
+    lateinit var displayManager: DisplayManager
 
     override fun onCreate() {
         super.onCreate()
@@ -69,12 +76,44 @@ class DisplayAlarmService : AlarmService() {
         return serviceChannel
     }
 
-    override val startTimeFlow: Flow<Long>
-        get() = dsRepo.startTimeFlow
-
-    override val endTimeFlow: Flow<Long>
-        get() = dsRepo.endTimeFlow
-
     override val defaultDisplay: Display
         get() = displayManager.displays.first()
+
+    /** display 상태 instance **/
+    private val isDisplayOn = MutableStateFlow(false)
+    private val currentTimeFlow = MutableStateFlow(-1L) // 값을 -1로 지정하여, shouldStartAlarm 초기 값 false 만듬
+
+    override val shouldStartAlarm by lazy {
+        combine(
+            dsRepo.startTimeFlow,
+            dsRepo.endTimeFlow,
+            currentTimeFlow,
+            isDisplayOn
+        ) { start, end, current, display ->
+            return@combine (start <= current && current <= end) && display
+        }.stateIn(
+            scope = serviceScope,
+            started = SharingStarted.WhileSubscribed(5),
+            initialValue = false
+        )
+    }
+
+    override fun update(defaultDisplay: Display) {
+        when (defaultDisplay.state) {
+            1 -> {
+                isDisplayOn.value = false
+            }
+            2 -> {
+                isDisplayOn.value = true
+            }
+            else -> {
+                isDisplayOn.value = false
+            }
+        }       // [isDisplayOn]에 display state 값 반영
+        currentTimeFlow.value = getCurrentTime(Calendar.getInstance().time)      // currentTimeFlow 업데이트
+    }
+
+    private fun getCurrentTime(date: Date):Long{
+        return date.hours * HOUR_MILLI + date.minutes * MIN_MILLI
+    }
 }
