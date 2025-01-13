@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import java.util.Date
 
 /** Alarm 작동에 관한 로직 관리 layer **/
 abstract class AlarmService: BaseForegroundService() {
@@ -57,7 +58,7 @@ abstract class AlarmService: BaseForegroundService() {
             currentTimeFlow,
             isDisplayOn
         ){ start,end,current,display ->
-            return@combine isInTime(start, current, end) && display
+            return@combine (start<=current && current<=end) && display
         }.stateIn(
             scope = serviceScope,
             started = SharingStarted.WhileSubscribed(5),
@@ -66,7 +67,7 @@ abstract class AlarmService: BaseForegroundService() {
     }
 
     /** update values every second **/
-    suspend fun update(defaultDisplay:Display) {
+    fun update(defaultDisplay:Display) {
         when (defaultDisplay.state) {
             1 -> {
                 isDisplayOn.value = false
@@ -78,21 +79,10 @@ abstract class AlarmService: BaseForegroundService() {
                 isDisplayOn.value = false
             }
         }       // [isDisplayOn]에 display state 값 반영
-        currentTimeFlow.value = getCurrentTime()      // currentTimeFlow 업데이트
+        currentTimeFlow.value = getCurrentTime(Calendar.getInstance().time)      // currentTimeFlow 업데이트
     }
 
-    /** hour : minute 값을 millisecond 단위로 변환 **/
-    private fun convertToMilli(hour:Int?, minute:Int?):Long{
-        return (hour ?:0)* HOUR_MILLI + (minute ?:0)* MIN_MILLI
-    }
-
-    private fun getCurrentTime():Long{
-        val temp = Calendar.getInstance().time
-        return convertToMilli(temp.hours,temp.minutes)
-    }
-
-    /** 시간 조건 **/
-    private fun isInTime(start:Long,current:Long,end:Long):Boolean{
-        return start<=current && current<=end
+    private fun getCurrentTime(date:Date):Long{
+        return date.hours * HOUR_MILLI + date.minutes * MIN_MILLI
     }
 }
