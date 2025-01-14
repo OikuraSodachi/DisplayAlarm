@@ -4,14 +4,15 @@ import android.view.Display
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 /** Alarm 작동에 관한 로직 관리 layer **/
 abstract class AlarmService: BaseForegroundService() {
 
     open val updatePeriod = 1000L
-    abstract val shouldStartAlarm: StateFlow<Boolean>
+    abstract val shouldStartAlarm: Flow<Boolean>
+    abstract val enableSound: Flow<Boolean?>
     abstract val defaultDisplay: Display
 
     override fun onCreate() {
@@ -25,6 +26,17 @@ abstract class AlarmService: BaseForegroundService() {
                 }
             }
         }
+        serviceScope.launch {
+            enableSound.collect{
+                if(it == false){
+                    mute()
+                }else{
+                    unMute()
+                }
+            }
+
+        }
+
         CoroutineScope(Dispatchers.Default).launch {
             while(true){
                 update(defaultDisplay)
@@ -38,4 +50,6 @@ abstract class AlarmService: BaseForegroundService() {
 
     /** update values every second **/
     abstract fun update(defaultDisplay: Display)
+    abstract fun mute()
+    abstract fun unMute()
 }

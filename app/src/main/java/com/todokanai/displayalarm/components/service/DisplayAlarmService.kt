@@ -7,7 +7,6 @@ import android.hardware.display.DisplayManager
 import android.media.MediaPlayer
 import android.view.Display
 import androidx.core.app.NotificationCompat
-import androidx.lifecycle.asLiveData
 import com.todokanai.displayalarm.R
 import com.todokanai.displayalarm.abstracts.AlarmService
 import com.todokanai.displayalarm.components.activity.MainActivity.Companion.mainIntent
@@ -20,6 +19,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.Date
 import javax.inject.Inject
@@ -39,11 +39,13 @@ class DisplayAlarmService : AlarmService() {
 
     override fun onCreate() {
         super.onCreate()
-        dsRepo.enableSoundFlow.asLiveData().observeForever(){
-            if(it==false){
-                mute()
-            }else{
-                unMute()
+        serviceScope.launch {
+            dsRepo.enableSoundFlow.collect{
+                if(it == false){
+                    mute()
+                }else{
+                    unMute()
+                }
             }
         }
        // model.testModel.init(serviceScope)        // 나중에 제거할
@@ -51,7 +53,6 @@ class DisplayAlarmService : AlarmService() {
 
     override suspend fun onStartAlarm() {
         val uri = dsRepo.getFileUri()
-        val enableSound = dsRepo.getEnableSound() ?: false
 
         mediaPlayer.run {
             if (uri == null) {
@@ -106,6 +107,8 @@ class DisplayAlarmService : AlarmService() {
         )
     }
 
+    override val enableSound by lazy{ dsRepo.enableSoundFlow }
+
     override fun update(defaultDisplay: Display) {
         when (defaultDisplay.state) {
             1 -> {
@@ -125,11 +128,11 @@ class DisplayAlarmService : AlarmService() {
         return date.hours * HOUR_MILLI + date.minutes * MIN_MILLI
     }
 
-    private fun mute(){
+    override fun mute(){
         mediaPlayer.setVolume(0f,0f)
     }
 
-    private fun unMute(){
+    override fun unMute(){
         mediaPlayer.setVolume(1f,1f)
     }
 }
