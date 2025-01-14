@@ -61,9 +61,6 @@ class DataStoreRepository @Inject constructor(appContext: Context): MyDataStore(
         return (hour ?:0)* HOUR_MILLI + (minute ?:0)* MIN_MILLI
     }
 
-    suspend fun getStartTime():Long{
-        return convertToMilli(getStartHour(),getStartMin())
-    }
     val startTimeFlow = combine(
         startHourFlow,
         startMinFlow
@@ -71,9 +68,6 @@ class DataStoreRepository @Inject constructor(appContext: Context): MyDataStore(
         convertToMilli(hour,min)
     }
 
-    suspend fun getEndTime():Long{
-        return convertToMilli(getEndHour(),getEndMin())
-    }
     val endTimeFlow = combine(
         endHourFlow,
         endMinFlow

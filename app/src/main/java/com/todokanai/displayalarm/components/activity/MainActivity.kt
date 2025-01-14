@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-                disableSoundFlow.asLiveData().observe(this@MainActivity){
+                enableSound.asLiveData().observe(this@MainActivity){
                     it?.let { t->
                         binding.soundswitch.isChecked = t
                     }

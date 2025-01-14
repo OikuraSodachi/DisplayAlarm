@@ -33,7 +33,7 @@ class MainViewModel @Inject constructor(private val dataStore:DataStoreRepositor
     val endHourFlow = dataStore.endHourFlow
     val endMinFlow = dataStore.endMinFlow
 
-    val disableSoundFlow = dataStore.enableSoundFlow
+    val enableSound = dataStore.enableSoundFlow
 
     /** uri에서 File 이름 추출
      *
