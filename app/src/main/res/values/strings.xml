@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">DisplayAlarm</string>
-    <string name="notification_title">null title notification</string>
-    <string name="notification_content_text">notification content text</string>
+    <string name="notification_title">DisplayAlarm</string>
+    <string name="notification_content_text">DisplayAlarm is On</string>
     <string name="enable_sound">enable sound</string>
     <string name="exit">exit</string>
     <string name="set_time">set Time</string>
