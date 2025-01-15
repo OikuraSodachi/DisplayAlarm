@@ -40,11 +40,6 @@ class MainActivity : AppCompatActivity() {
 
         binding.run {
             soundswitch.setOnCheckedChangeListener{ _, isChecked ->
-                if (isChecked) {
-                    // The switch is checked.
-                } else {
-                    // The switch isn't checked.
-                }
                 viewModel.soundSwitch(isChecked)
             }
 
@@ -94,14 +89,8 @@ class MainActivity : AppCompatActivity() {
             spinnerCase2(binding.saveTimeBtn,android.R.layout.simple_spinner_dropdown_item)   // 별도의 save 버튼으로 반영 방식
         }
         viewModel.fileName.asLiveData().observe(this){
-            binding.soundFileName.text = it
+            binding.soundFileName.text = "SoundFile: $it"
         }
-        /*
-        viewModel.file.asLiveData().observe(this@MainActivity){
-            println("test: $it")
-        }
-
-         */
         setContentView(binding.root)
     }
 
