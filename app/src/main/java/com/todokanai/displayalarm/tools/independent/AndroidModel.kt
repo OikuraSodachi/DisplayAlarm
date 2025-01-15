@@ -70,21 +70,6 @@ fun callHandler_td(
     handler.post({callback()})
 }
 
-/*
-
-/** Logcat Tag 매크로 용도 **/
-fun setupTimber_td() {
-    Timber.plant(
-        object : Timber.DebugTree() {
-            override fun createStackElementTag(element: StackTraceElement): String {
-                val className = super.createStackElementTag(element)
-                return "TAG $className ${element.methodName}"
-            }
-        }
-    )
-}
- */
-
 fun isPermissionGranted_td(activity: Activity, permission: String):Boolean{
     val result = ContextCompat.checkSelfPermission(activity,permission)
     return result == PackageManager.PERMISSION_GRANTED

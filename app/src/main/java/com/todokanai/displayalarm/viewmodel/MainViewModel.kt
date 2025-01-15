@@ -72,13 +72,6 @@ class MainViewModel @Inject constructor(private val dataStore:DataStoreRepositor
         exitProcess(0)
     }
 
-    /*
-    fun isPermissionGranted(activity: Activity):Boolean{
-        val permission = permissions.first()
-        return ContextCompat.checkSelfPermission(activity,permission) == PackageManager.PERMISSION_GRANTED
-    }
-     */
-
     fun requestPermission(activity: Activity, requestCode:Int = 1111){
         ActivityCompat.requestPermissions(
             activity,
